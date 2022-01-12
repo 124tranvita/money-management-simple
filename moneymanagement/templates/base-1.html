@@ -51,29 +51,35 @@
     {% endif %} {% endfor %} {% endwith %}
     <!--FLASHED MESSAGES END-->
     <main class="container">
-      <div class="content">
-        <div class="card card-center" style="width: auto">
-          <div class="card-img-top">
-            {% block card_image %}
-            <!--extend stuff-->
-            {% endblock card_image %}
-          </div>
-          <div class="card-body">
-            <h3 class="card-title">
-              {% block card_title %}
-              <!--extend stuff-->
-              {% endblock card_title %}
-            </h3>
-            <p class="card-text">
-              {% block card_text %}
-              <!--extend stuff-->
-              {% endblock card_text %}
-            </p>
-            {% block card_botton %}
-            <!--extend stuff-->
-            {% endblock card_botton %}
+      <div class="row">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6">
+          <div class="content">
+            <div class="card card-center" style="width: auto">
+              <div class="card-img-top">
+                {% block card_image %}
+                <!--extend stuff-->
+                {% endblock card_image %}
+              </div>
+              <div class="card-body">
+                <h3 class="card-title">
+                  {% block card_title %}
+                  <!--extend stuff-->
+                  {% endblock card_title %}
+                </h3>
+                <p class="card-text">
+                  {% block card_text %}
+                  <!--extend stuff-->
+                  {% endblock card_text %}
+                </p>
+                {% block card_botton %}
+                <!--extend stuff-->
+                {% endblock card_botton %}
+              </div>
+            </div>
           </div>
         </div>
+        <div class="col-sm-3"></div>
       </div>
     </main>
   </body>

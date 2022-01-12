@@ -33,7 +33,7 @@ def wallet_have_item():
     '''
     return render_template('errors/errors.html', wallet_error_2=True)
 
-@errors_page.route('/errors/wallet_required')
+@errors_page.route('/errors/wallet_require')
 def wallet_require():
     '''
     Cảnh báo xảy ra khi người dùng tạo danh mục khi chưa có ví

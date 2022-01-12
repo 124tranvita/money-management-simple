@@ -10,7 +10,7 @@ from moneymanagement.items.forms import AddItemForm, UpdateItemForm, FilterItemF
 items_blueprint = Blueprint('items', __name__)
 
 # Thêm danh mục mới
-@items_blueprint.route('/<int:user_id>/add_items', methods=['GET', 'POST'])
+@items_blueprint.route('/<int:user_id>/add_item', methods=['GET', 'POST'])
 @login_required
 def add(user_id):
   # Kiểm tra xem người dùng đã có ví hay chưa, nếu chưa -> warning yêu cầu tạo ví trước
