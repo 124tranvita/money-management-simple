@@ -8,6 +8,12 @@ card_image %}
 <p>Quản Lý Chi Tiêu Cá Nhân</p>
 {% endblock card_title %} {% block card_text %}
 <p>Đăng nhập để bắt đầu sử dụng!</p>
-{% endblock card_text %} {% block card_button %}
+{% endblock card_text %} {% block card_botton %}
 <a href="{{ url_for('users.login') }}" class="btn btn-primary">Đăng Nhập</a>
-{% endblock card_button %}
+<br />
+<br />
+<p>
+  Nếu bạn chưa có tài khoản,
+  <a href="{{ url_for('users.register') }}">đăng ký</a>!
+</p>
+{% endblock card_botton %}
