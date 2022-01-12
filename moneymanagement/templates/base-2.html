@@ -84,6 +84,7 @@
               </div>
               {% block current_balance %}
               <div class="desc"><h6>Còn lại trong tháng</h6></div>
+              {% if have_wallet %}
               <div class="desc">
                 {% if session['current_money'] > (session['balance'] / 2) %}
                 <h5 style="color: green">
@@ -99,7 +100,9 @@
                 </h5>
                 {% endif %}
               </div>
-              {% endblock current_balance %}
+              {% else %}
+              <div class="desc"><span>&#8363;</span></div>
+              {% endif %} {% endblock current_balance %}
               <div class="desc"></div>
             </div>
             <!--Select Manage-->

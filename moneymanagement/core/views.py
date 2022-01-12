@@ -28,8 +28,11 @@ def home(user_id):
   if user_id != current_user.id:
     abort(403)
   
+  # Tạo 1 biến trigger để show thông tin số tiền còn lại trong ví của người dùng bằng session
+  have_wallet=True
   # Nếu người dùng hiện tại chưa có ví -> show warning message yêu cầu tạo ví
   if not Wallet.query.filter_by(user_id=user_id).first():
+    have_wallet = False
     return redirect(url_for('errors.wallet_require'))
 
   # Khởi tạo biến 'date' và dùng hàm datetime.utcnow() để lưu thời gian hiện tại
@@ -56,7 +59,7 @@ def home(user_id):
   # Dùng hàm month_report_in_percent để trả về dict{'ngày':['tổng khoản chi', '% trên tồng khoản chi]} của tháng hiện tại
   report_in_percent = month_report_in_percent(report)
 
-  return render_template('home.html', expenses_date=expenses_date, wallet=wallet, tracks=tracks, items=items, user_id=user_id, date=date, report=report, report_in_percent=report_in_percent)
+  return render_template('home.html', expenses_date=expenses_date, wallet=wallet, tracks=tracks, items=items, user_id=user_id, date=date, report=report, report_in_percent=report_in_percent, have_wallet=have_wallet)
 
 # About View
 @core_blueprint.route('/about')
