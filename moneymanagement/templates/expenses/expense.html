@@ -1,0 +1,185 @@
+{% extends 'base-2.html' %} {% block title %} Expenses {% endblock title %}
+{%block breadcrumb %}
+<div class="content-breadcrumb">
+  <ul class="breadcrumb">
+    <li>
+      <a href="{{ url_for('core.home', user_id=current_user.id) }}"
+        >Trang chủ</a
+      >
+    </li>
+    <li><a href="#">{{ current_user.username }}</a></li>
+    <li>Các khoản chi</li>
+  </ul>
+</div>
+{% endblock breadcrumb %}
+{%block content %}
+<div class="content-home">
+  <!--Table-->
+  <section class="">
+    <div class="">
+      <table class="table">
+        <thead>
+          <!--tr>
+            <th>Khoản chi</th>
+            <th>Thời gian</th>
+            <th>Danh mục</th>
+            <th>Số tiền</th>
+            <th>Khác</th>
+          </tr-->
+        </thead>
+        <tbody>
+          <!--Add expense-->
+          <tr>
+            <td>
+              <a href="{{ url_for('expenses.add', user_id=current_user.id) }}">
+              <div class="user-info">
+                <div class="user-info__img">
+                  <img
+                    src="{{ url_for('static', filename='icons/expenses-icon.svg') }}"
+                    alt="Expense Icon"
+                  />
+                </div>
+                <div class="user-info__basic">
+                  <h5 class="mb-0">Thêm khoản chi</h5>
+                  <p class="text-muted mb-0"></p>
+                </div>
+              </div>
+            </a>
+            </td>
+            <td></td>
+            <td>
+              <a href="#">
+                <div class="user-info">
+                  <div class="user-info__basic">
+                    <h5 class="mb-0">Tổng chi</h5>
+                  </div>
+                </div>
+              </a>
+            </td>
+            <td>
+              <a href="#">
+              <h5 class="mb-0">{{ "{:,.0f}".format(current_user.expenses_amount_in_sum()) }}<span>&#8363;</span></h5>
+              </a>
+            </td>
+            <td>
+              <div class="dropdown open">
+                <a class="dropdown-toggle" href="#" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bi bi-three-dots"></i>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <li>
+                    <a class="dropdown-item" href="{{ url_for('users.item', user_id=current_user.id) }}">
+                    <i class="bi bi-list-task"></i> Quản lý theo danh mục
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="{{ url_for('expenses.expense_filter', user_id=current_user.id) }}">
+                    <i class="bi bi-funnel"></i> Bộ lọc theo thời gian
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item text-danger" href="{{ url_for('expenses.delete_all', user_id=current_user.id) }}" onclick="return confirm('Bạn có muốn xoá tất cả các danh mục?');">
+                    <i class="fa fa-trash mr-1"></i> Xoá
+                    </a>
+                </ul>
+              </div>
+            </td>
+          </tr>
+          <!--Add expense-->
+          <!--Table header-->
+          <tr>
+            <th>Khoản chi</th>
+            <th>Thời gian</th>
+            <th>Danh mục</th>
+            <th>Số tiền</th>
+            <th>Khác</th>
+          </tr>
+          <!--Table header-->
+          <!--Expenses list-->
+          {% for expense in expenses.items %}
+          <tr>
+            <td>
+              <div class="user-info">
+                <div class="user-info__img">
+                  <img
+                    src="{{ url_for('static', filename='icons/expenses-icon.svg') }}"
+                    alt="Expense Icon"
+                  />
+                </div>
+                <div class="user-info__basic">
+                  <h5 class="mb-0">{{ expense.name }}</h5>
+                  <p class="text-muted mb-0">{{ expense.description }}</p>
+                </div>
+              </div>
+            </td>
+            <td>
+              <h6 class="mb-0">{{ expense.date.strftime('%Y-%m-%d') }}</h6>
+            </td>
+            <td>
+              <h6 class="mb-0">{{ expense.items.name }}</h6>
+            </td>
+            <td>
+              <h6 class="mb-0">
+                {{ "{:,.0f}".format(expense.amount) }}<span>&#8363;</span>
+              </h6>
+            </td>
+            <td>
+              <div class="dropdown open">
+                <a class="dropdown-toggle" href="#" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bi bi-three-dots"></i>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <li>
+                    <a class="dropdown-item" href="{{ url_for('expenses.update', user_id=current_user.id, expense_id=expense.id) }}">
+                    <i class="fa fa-pencil mr-1"></i> Chỉnh sửa
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item text-danger" href="{{ url_for('expenses.delete', expense_id=expense.id) }}" onclick="return confirm('Bạn có muốn xoá danh mục {{ expense.name }}?');">
+                    <i class="fa fa-trash mr-1"></i> Xoá
+                    </a>
+                </ul>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+          <!--End expenses list-->
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <!--End Table-->
+  <!--Table pagination-->
+  <div class="demo">
+    <nav class="pagination-outer" aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <li class="page-item">
+                <a href="{{ url_for('users.expense', user_id=current_user.id, page=expenses.prev_num) }}" class="page-link" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% for page_num in expenses.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+              {% if page_num %}
+                {% if expenses.page == page_num %}
+                  <li class="page-item disabled">
+                    <a class="page-link" href="{{ url_for('users.expense', user_id=current_user.id, page=page_num) }}">{{ page_num }}</a>
+                  </li>
+                {% else %}
+                  <li class="page-item">
+                    <a class="page-link" href="{{ url_for('users.expense', user_id=current_user.id, page=page_num) }}">{{ page_num }}</a>
+                  </li>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+            <li class="page-item">
+                <a href="{{ url_for('users.expense', user_id=current_user.id, page=expenses.next_num) }}" class="page-link" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+  <!--Table pagination end-->
+  </div>
+</div>
+{% endblock content %}

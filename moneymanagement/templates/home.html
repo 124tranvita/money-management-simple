@@ -1,0 +1,214 @@
+{% extends 'base-2.html' %} {% block title %} Home {% endblock title %} {% block
+content %}
+<div class="content-home">
+  <!--Summary Session-->
+  <section>
+    <table class="table table-add">
+      <thead></thead>
+      <tbody>
+        <tr>
+          <!--Wallet-->
+          <td>
+            <a href="#">
+              <div class="user-info">
+                <div class="user-info__img">
+                  <a
+                    href="{{ url_for('users.wallet', user_id=current_user.id) }}"
+                  >
+                    <img
+                      src="{{ url_for('static', filename='icons/wallet-icon.svg') }}"
+                      alt="Wallet Icon"
+                    />
+                  </a>
+                </div>
+                <div class="user-info__basic">
+                  <h5 class="mb-0">{{ wallet.name }}</h5>
+                  <p class="text-muted mb-0">
+                    {{ "{:,.0f}".format(wallet.balance_in_period(date)) }}<span
+                      >&#8363;</span
+                    >
+                  </p>
+                </div>
+              </div>
+            </a>
+          </td>
+          <!--Wallet-->
+          <!--Items-->
+          <td>
+            <a href="#">
+              <div class="user-info">
+                <div class="user-info__img">
+                  <a
+                    href="{{ url_for('users.item', user_id=current_user.id) }}"
+                  >
+                    <img
+                      src="{{ url_for('static', filename='icons/list-icon.svg') }}"
+                      alt="Item Icon"
+                    />
+                  </a>
+                </div>
+                <div class="user-info__basic">
+                  <h5 class="mb-0">Danh mục</h5>
+                  <p class="text-muted mb-0">
+                    {{ items.count()}} danh mục đã chi
+                  </p>
+                </div>
+              </div>
+            </a>
+          </td>
+          <!--Items-->
+          <!--Expense-->
+          <td>
+            <a href="#">
+              <div class="user-info">
+                <div class="user-info__img">
+                  <a
+                    href="{{ url_for('users.expense', user_id=current_user.id) }}"
+                  >
+                    <img
+                      src="{{ url_for('static', filename='icons/expenses-icon.svg') }}"
+                      alt="Expense Icon"
+                    />
+                  </a>
+                </div>
+                <div class="user-info__basic">
+                  <h5 class="mb-0">Khoản chi</h5>
+                  <p class="text-muted mb-0">
+                    {{ expenses_date.count()}} khoản đã chi
+                  </p>
+                </div>
+              </div>
+            </a>
+          </td>
+          <!--Expense-->
+        </tr>
+      </tbody>
+    </table>
+  </section>
+  <!--Summary Session End-->
+
+  <!--Bar Chart Demo-->
+  <div class="email-container">
+    <div class="minwidth">
+      <table class="barchart" cellpadding="1" cellspacing="0">
+        <tr>
+          {% for key, value in report_in_percent.items() %}
+          <td>
+            <span class="label">{{ "{:,.0f}".format(value[0]) }}&#8363;</span>
+            <div class="bar" style="height:{{ value[1] }}%"></div>
+          </td>
+          {% endfor %}
+        </tr>
+        <tr>
+          {% for key, value in report.items() %}
+          <td>{{ key }}</td>
+          {% endfor %}
+        </tr>
+      </table>
+    </div>
+
+    <br />
+    <h3>Thống kê {{date}}</h3>
+    <table class="errorlist" cellpadding="5" cellspacing="0">
+      <tr>
+        <td valign="top" class="counter">
+          <span>{{ expenses_date.count()}}</span>
+        </td>
+        <td valign="top">&times;</td>
+        <td>
+          Khoản đã chi trong tháng, tổng chi là
+          <b
+            >{{ "{:,.0f}".format(current_user.expenses_amount_in_period(date))
+            }} <span>&#8363;</span></b
+          >
+        </td>
+      </tr>
+      {% for item in items %} {% if item.amount_in_period(current_user.id, date)
+      > 0 %}
+      <tr>
+        <td valign="top" class="counter">
+          <span
+            >{{ item.expense_count_in_period(current_user.id, item.id, date)
+            }}</span
+          >
+        </td>
+        <td valign="top">&times;</td>
+        <td>
+          Khoản đã chi cho danh mục <b>{{item.name}}</b>, tổng chi là <b>{{
+          "{:,.0f}".format(item.amount_in_period(current_user.id, date)) }}<span>&#8363;</span></b
+        </td>
+      </tr>
+      {% endif %} {% endfor %}
+      {% if wallet %}
+      <tr>
+        <td valign="top" class="counter"><span>{{ tracks.count() }}</span></td>
+        <td valign="top">&times;</td>
+        <td>
+          Khoản thu nhập đã nhận trong tháng, tổng cộng <b>{{ "{:,.0f}".format(wallet.balance_in_period(date)) }}<span>&#8363;</span></b>
+        </td>
+      </tr>
+      {% endif %}
+    </table>
+  </div>
+  <!--Bar Chart Demo-->
+
+  <!--Expense Table-->
+  <section>
+    <div class="container">
+      <div></div>
+      <br />
+      <table class="table">
+        <thead></thead>
+        <tbody>
+          <!--Summary row-->
+          <tr>
+            <td>
+              <p class="text-muted mb-0">5 khoản chi gần nhất</p>
+            </td>
+            <td></td>
+            <td></td>
+          </tr>
+          <!--Summary row-->
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <section>
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr class="btn-primary">
+          <th scope="col">Khoản chi</th>
+          <th scope="col">Thời gian</th>
+          <th scope="col">Danh mục</th>
+          <th scope="col">Số tiền</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for expense in expenses_date[:5] %}
+        <tr>
+          <th>
+            <a
+              href="#"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="{{ expense.description }}"
+              style="color: #000"
+            >
+              <div class="user-info">
+                <div class="user-info__basic">
+                  <h6 class="mb-0">{{ expense.name }}</h6>
+                </div>
+              </div>
+            </a>
+          </th>
+          <td>{{ expense.date.strftime('%Y-%m-%d') }}</td>
+          <td>{{ expense.items.name }}</td>
+          <td>{{ "{:,.0f}".format(expense.amount) }}<span>&#8363;</span></td>
+        </tr>
+        <!-- Detail Expense Modal -->
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+  <!--Expense Table-->
+{% endblock content %}

@@ -1,0 +1,79 @@
+{% extends 'base-2.html' %} {% block title %} Add Expense {% endblock title %}
+{%block breadcrumb %}
+<div class="content-breadcrumb">
+  <ul class="breadcrumb">
+    <li>
+      <a href="{{ url_for('core.home', user_id=current_user.id) }}"
+        >Trang chủ</a
+      >
+    </li>
+    <li><a href="#">{{ current_user.username }}</a></li>
+    <li><a href="{{ url_for('users.expense', user_id=user_id) }}">Các khoản chi</a></li>
+    <li>Thêm khoản chi</li>
+  </ul>
+</div>
+{% endblock breadcrumb %}
+{%block content %}
+<div class="content-home">
+  <div class="container">
+    <!--error card-->
+    <div class="row">
+      <div class="col-sm-2"></div>
+      <div class="col-sm-8">
+        <div class="card hovercard">
+          <div class="cardheader-add-wallet"></div>
+          <div class="avatar">
+            <a href="#">
+              <img
+                alt=""
+                src="{{ url_for('static', filename='icons/expenses-icon.svg') }}"
+              />
+            </a>
+          </div>
+          <div class="info">
+            <div class="title">
+              <p><h4 class="color">Thêm khoản chi</h4></p>
+            </div>
+            <div class="container" align="left">
+              <form method="POST">
+                {{ form.hidden_tag() }}
+                <div class="row">
+                  <div class="col-sm-6">
+                    <label class="form-label" for="name">Tên khoản chi</label>
+                    {{form.name(class="form-control") }} {{ render_error(form.name) }}
+                  </div>
+                  <div class="col-sm-6">
+                    <label class="form-label" for="date">Thời gian</label>
+                    {{form.date(class="form-control", placeholder="YYY-mm-dd") }} {{ render_error(form.date) }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-12">
+                    <label class="form-label" for="description">Mô tả</label>
+                    {{form.description(class="form-control") }} {{
+                    render_error(form.description) }}
+                  </div>
+                </div>
+                <div class="row"> 
+                  <div class="col-sm-6">
+                    <label class="form-label" for="amount">Số tiền</label>
+                    {{form.amount(class="form-control", type="number", pattern="^\d+(\.|\,)\d{2}$") }} {{ render_error(form.amount) }}
+                  </div>
+                  <div class="col-sm-6">
+                    <label class="form-label" for="item_id">Danh mục</label>
+                    {{form.item_id(class="form-control") }} {{ render_error(form.item_id) }}
+                  </div>
+                </div> 
+                <div class="col-12 button-center">{{ form.submit(class="btn btn-primary", value="Thêm") }}</div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-2"></div>
+  </div>
+    <!--error card-->
+  </div>
+</div>
+{% endblock content %}
+

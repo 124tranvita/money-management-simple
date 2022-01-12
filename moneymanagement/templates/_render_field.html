@@ -1,0 +1,7 @@
+{% macro render_error(field) %}
+<ul>
+    {% for error in field.errors %}
+        <li style="color: red">{{ error }}</li>
+    {% endfor %}
+</ul>
+{% endmacro %}

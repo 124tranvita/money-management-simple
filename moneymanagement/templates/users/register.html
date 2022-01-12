@@ -1,0 +1,44 @@
+{% extends 'base-1.html' %} {% block title %} Home {% endblock title %} {% block
+card_image %}
+<img
+  src="{{ url_for('static', filename='icons/register-icon.png') }}"
+  class="card-img-top"
+/>
+{% endblock card_image %} {% block card_title %}
+<p>Đăng Ký</p>
+{% endblock card_title %} {% block card_text %}
+<p>
+  Nếu bạn đã có tài khoản,
+  <a href="{{ url_for('users.login') }}">đăng nhập</a>!
+</p>
+<div class="col-sm-12" align="left">
+  <form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+      {{ form.email.label(class="form-label") }} {{
+      form.email(class="form-control") }} {{ render_error(form.email) }}
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="username">Tên Người Dùng</label>
+      {{ form.username(class="form-control") }} {{ render_error(form.username)
+      }}
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="password">Mật Khẩu</label>
+      {{ form.password(class="form-control") }}
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="password_confirm">Nhập Lại Mật Khẩu</label>
+      {{ form.password_confirm(class="form-control") }} {{
+      render_error(form.password) }}
+    </div>
+    <div class="col-12 button-center">
+      {{ form.submit(class="btn btn-primary", value="Đăng Ký") }}
+    </div>
+  </form>
+</div>
+{% endblock card_text %} {% block card_button %}<a
+  href="{{ url_for('core.index') }}"
+  >Quay về trang chủ</a
+>
+{% endblock card_button %}

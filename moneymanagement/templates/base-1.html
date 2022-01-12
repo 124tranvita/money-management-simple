@@ -1,0 +1,80 @@
+<!--BASE FOR INDEX, LOGIN AND REGISTER-->
+{% from "_render_field.html" import render_field, render_error %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- CSS only -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles/main.css') }}"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU"
+      crossorigin="anonymous"
+    />
+    <!-- JavaScript Bundle with Popper -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
+      crossorigin="anonymous"
+    ></script>
+    <title>{% block title %} <!--put title here --> {% endblock title %}</title>
+  </head>
+  <body>
+    <!--FLASHED MESSAGES-->
+    {% with messages = get_flashed_messages(with_categories=true) %} {% for
+    category, message in messages %} {% if category == 'error' %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      <span>{{ message }}</span>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    {% else %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <span>{{ message }}</span>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    {% endif %} {% endfor %} {% endwith %}
+    <!--FLASHED MESSAGES END-->
+    <main class="container">
+      <div class="content">
+        <div class="card card-center" style="width: auto">
+          <div class="card-img-top">
+            {% block card_image %}
+            <!--extend stuff-->
+            {% endblock card_image %}
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">
+              {% block card_title %}
+              <!--extend stuff-->
+              {% endblock card_title %}
+            </h3>
+            <p class="card-text">
+              {% block card_text %}
+              <!--extend stuff-->
+              {% endblock card_text %}
+            </p>
+            {% block card_button %}
+            <!--extend stuff-->
+            {% endblock card_button %}
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

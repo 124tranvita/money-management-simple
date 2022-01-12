@@ -1,0 +1,13 @@
+{% extends 'base-1.html' %} {% block title %} Home {% endblock title %} {% block
+card_image %}
+<img
+  src="https://mdbcdn.b-cdn.net/img/new/standard/nature/111.webp"
+  class="card-img-top"
+/>
+{% endblock card_image %} {% block card_title %}
+<p>Quản Lý Chi Tiêu Cá Nhân</p>
+{% endblock card_title %} {% block card_text %}
+<p>Đăng nhập để bắt đầu sử dụng!</p>
+{% endblock card_text %} {% block card_button %}
+<a href="{{ url_for('users.login') }}" class="btn btn-primary">Đăng Nhập</a>
+{% endblock card_button %}

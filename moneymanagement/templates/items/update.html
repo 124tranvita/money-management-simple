@@ -1,0 +1,57 @@
+{% extends 'base-2.html' %} {% block title %} Add Expense {% endblock title %}
+{%block breadcrumb %}
+<div class="content-breadcrumb">
+  <ul class="breadcrumb">
+    <li>
+      <a href="{{ url_for('core.home', user_id=current_user.id) }}"
+        >Trang chủ</a
+      >
+    </li>
+    <li><a href="#">{{ current_user.username }}</a></li>
+    <li><a href="{{ url_for('users.item', user_id=current_user.id) }}">Các danh mục</a></li>
+    <li>Cập nhật danh mục</li>
+  </ul>
+</div>
+{% endblock breadcrumb %}
+{%block content %}
+<div class="content-home">
+  <div class="container">
+    <!--error card-->
+    <div class="row">
+      <div class="col-sm-2"></div>
+      <div class="col-sm-8">
+        <div class="card hovercard">
+          <div class="cardheader-items"></div>
+          <div class="avatar">
+            <a href="#">
+              <img
+                alt=""
+                src="{{ url_for('static', filename='icons/list-icon.svg') }}"
+              />
+            </a>
+          </div>
+          <div class="info">
+            <div class="title">
+              <p><h4 class="color">Tên danh mục</h4></p>
+            </div>
+            <div class="container" align="left">
+              <form method="POST">
+                {{ form.hidden_tag() }}
+                <div class="row">
+                  <div class="col-sm-12">
+                    {{form.name(class="form-control") }} {{ render_error(form.name) }}
+                  </div>
+                </div>
+                <div class="col-12 button-center">{{ form.submit(class="btn btn-primary", value="Cập nhật") }}</div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-2"></div>
+  </div>
+    <!--error card-->
+  </div>
+</div>
+{% endblock content %}
+

@@ -1,0 +1,221 @@
+<!--BASE FOR DASHBOARD-->
+{% from "_render_field.html" import render_field, render_error %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- CSS only -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='styles/main.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='styles/profile.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='styles/card.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='styles/table.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='styles/pagination.css') }}"
+    />
+    <!--CSS Only End-->
+    <!-- Add icon library -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU"
+      crossorigin="anonymous"
+    />
+    <!-- JavaScript Bundle with Popper -->
+    <script
+      type="text/javascript"
+      src="https://www.gstatic.com/charts/loader.js"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
+      crossorigin="anonymous"
+    ></script>
+    <!--Script for table-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <!--Script for table end-->
+    <title>{% block title %} <!--put title here --> {% endblock title %}</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row g-2">
+        <!--User information-->
+        <div class="col-sm-2">
+          <div class="card hovercard">
+            <div class="cardheader"></div>
+            <div class="avatar">
+              <img
+                alt=""
+                src="{{ url_for('static', filename='icons/man.png') }}"
+              />
+            </div>
+            <div class="info">
+              <div class="title">
+                <a target="_blank" href="#">{{ current_user.username }}</a>
+              </div>
+              {% block current_balance %}
+              <div class="desc"><h6>Còn lại trong tháng</h6></div>
+              <div class="desc">
+                {% if session['current_money'] > (session['balance'] / 2) %}
+                <h5 style="color: green">
+                  {{ "{:,.0f}".format(session['current_money']) }}<span
+                    >&#8363;</span
+                  >
+                </h5>
+                {%else %}
+                <h5 style="color: red">
+                  {{ "{:,.0f}".format(session['current_money']) }}<span
+                    >&#8363;</span
+                  >
+                </h5>
+                {% endif %}
+              </div>
+              {% endblock current_balance %}
+              <div class="desc"></div>
+            </div>
+            <!--Select Manage-->
+            <div
+              class="bottom"
+              id="none-padding-margin"
+              style="text-align: center"
+            >
+              <div class="title">
+                <div class="row g2">
+                  <a
+                    class="btn btn-primary btn-sm margin btn-icon"
+                    href="{{ url_for('users.wallet', user_id=current_user.id) }}"
+                  >
+                    <i class="bi bi-wallet2"></i><span>&nbsp;Ví</span>
+                  </a>
+                </div>
+              </div>
+              <div class="title">
+                <div class="row g2" style="text-align: left">
+                  <a
+                    class="btn btn-primary btn-sm margin btn-icon"
+                    href="{{ url_for('users.item', user_id=current_user.id) }}"
+                  >
+                    <i class="bi bi-list-task"></i><span>&nbsp;Danh Mục</span>
+                  </a>
+                </div>
+              </div>
+              <div class="title">
+                <div class="row g2" style="text-align: left">
+                  <a
+                    class="btn btn-primary btn-sm margin btn-icon"
+                    href="{{ url_for('users.expense', user_id=current_user.id) }}"
+                  >
+                    <i class="bi bi-coin"></i><span>&nbsp;Khoản Chi</span>
+                  </a>
+                </div>
+              </div>
+              <div class="title">
+                <div class="row g2" style="text-align: left">
+                  <a
+                    class="btn btn-danger btn-sm margin btn-icon"
+                    href="{{ url_for('users.logout') }}"
+                  >
+                    <i class="bi bi-box-arrow-right"></i
+                    ><span>&nbsp;Thoát</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <!--Select Manage-->
+          </div>
+        </div>
+        <!--User information-->
+
+        <!--Content-->
+        <div class="col-sm-10">
+          <!--breadcrumb-->
+          {% block breadcrumb %}
+          <div class="content-breadcrumb">
+            <ul class="breadcrumb">
+              <li>
+                <a href="{{ url_for('core.home', user_id=current_user.id) }}"
+                  >Trang chủ</a
+                >
+              </li>
+              <li><a href="#">{{ current_user.username }}</a></li>
+            </ul>
+          </div>
+          {% endblock breadcrumb %}
+          <!--breadcrumb-->
+
+          <!--FLASHED MESSAGES-->
+          {% with messages = get_flashed_messages(with_categories=true) %} {%
+          for category, message in messages %} {% if category == 'error' %}
+          <div
+            class="alert alert-warning alert-dismissible fade show"
+            role="alert"
+          >
+            <span>{{ message }}</span>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+            ></button>
+          </div>
+          {% else %}
+          <div
+            class="alert alert-success alert-dismissible fade show"
+            role="alert"
+          >
+            <span>{{ message }}</span>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+            ></button>
+          </div>
+          {% endif %} {% endfor %} {% endwith %}
+          <!--FLASHED MESSAGES END-->
+
+          <!--block content-->
+          <div
+            class="container"
+            style="height: 100vh; max-height=fit-content; overflow-y: auto;"
+          >
+            {% block content %}
+            <!--extend stuff-->
+            {% endblock content %}
+          </div>
+          <!--block content-->
+        </div>
+        <!--Content-->
+      </div>
+    </div>
+  </body>
+</html>

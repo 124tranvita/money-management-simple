@@ -1,0 +1,93 @@
+.cardheader-wallet {
+  height: 60px;
+  background-color: blueviolet;
+  text-align: center;
+}
+
+.cardheader-add-wallet {
+  height: 60px;
+  background-color: #00b0f0;
+}
+
+.cardheader-expenses {
+  height: 60px;
+  background-color: #538dd5;
+}
+
+.cardheader-items {
+  height: 60px;
+  background-color: #fcd5b4;
+}
+
+.cardheader-error {
+  height: 60px;
+  background-color: olivedrab;
+}
+
+.cardheader-filter {
+  height: 60px;
+  background-color: #a9d08e;
+}
+
+.card-summary {
+  background-color: #0897eb !important;
+  color: white;
+}
+
+/* Scroll able div */
+div.ex3 {
+  overflow: auto !important;
+}
+/* End Scroll able div */
+
+/* Add fund to wallet */
+div.fix-height {
+  height: 50% !important;
+}
+/* End add fund to wallet */
+
+div.transparen-background {
+  background-color: transparent;
+}
+
+div.wallet {
+  max-height: 350px;
+  height: 100% !important;
+}
+
+h4.color {
+  color: blueviolet;
+}
+
+h5.color {
+  color: cornflowerblue;
+}
+
+/* breadcrumb */
+ul.breadcrumb {
+  padding: 10px 16px;
+  list-style: none;
+  background-color: #eee;
+}
+ul.breadcrumb li {
+  display: inline;
+  font-size: 18px;
+}
+ul.breadcrumb li + li:before {
+  padding: 8px;
+  color: black;
+  content: "/\00a0";
+}
+ul.breadcrumb li a {
+  color: #0275d8;
+  text-decoration: none;
+}
+ul.breadcrumb li a:hover {
+  color: #01447e;
+  text-decoration: underline;
+}
+/* end breadcrumb */
+#none-padding-margin {
+  padding: 0;
+  margin: 0;
+}

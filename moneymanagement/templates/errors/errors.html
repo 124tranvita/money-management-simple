@@ -1,0 +1,114 @@
+{% extends 'base-2.html' %} {% block title %} Wallets {% endblock title %}
+{%block breadcrumb %}
+<div class="content-breadcrumb">
+  <ul class="breadcrumb">
+    <li>
+      <a href="{{ url_for('core.home', user_id=current_user.id) }}"
+        >Trang chủ</a
+      >
+    </li>
+    <li><a href="#">{{ current_user.username }}</a></li>
+    <li>Lỗi</li>
+  </ul>
+</div>
+{% endblock breadcrumb %} {%block content %}
+<div class="content-home">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-3"></div>
+        <div class="col-sm-6">
+          <div class="card hovercard">
+            <div class="cardheader-error"></div>
+            <div class="avatar">
+              <a href="#">
+                <img
+                  alt=""
+                  src="{{ url_for('static', filename='icons/warning-icon.svg') }}"
+                />
+              </a>
+            </div>
+            {% if wallet_error_1 %}
+              <div class="info">
+                <div class="title">
+                  <h4 class="color">Bạn đã có ví rồi phải không?</h4>
+                </div>
+                <div class="desc">
+                  Hiện chúng tôi vẫn chưa hỗ trợ sử dụng nhiều ví cùng lúc, bạn vui lòng quay lại sau nhé!
+                </div>
+              </div>
+            {% elif wallet_error_2%}
+              <div class="info">
+                <div class="title">
+                  <h4 class="color">Ví có danh mục đang liên kết</h4>
+                </div>
+                <div class="desc">
+                  Hiện đang có một (hoặc nhiều hơn) danh mục đang liên kết với ví của bạn, hãy xoá danh mục liên kết trước khi xoá ví.
+                </div>
+              </div>
+            {% elif item_error_1%}
+              <div class="info">
+                <div class="title">
+                  <h4 class="color">Bạn chưa có ví phải không?</h4>
+                </div>
+                <div class="desc">
+                  Bạn cần phải tạo ví trước khi tiến hành quản lý chi tiêu!
+                </div>
+              </div>
+            {% elif item_error_2%}
+              <div class="info">
+                <div class="title">
+                  <h4 class="color">Vẫn còn chi tiêu gắn liền với danh mục!</h4>
+                </div>
+                <div class="desc">
+                  Trước khi xoá danh mục, bạn cần phải xoá tất cả các chi tiêu gắn liền với danh mục!
+                </div>
+              </div>
+            {% elif expense_error_1%}
+              <div class="info">
+                <div class="title">
+                  <h4 class="color">Bạn chưa tạo danh mục nào phải không?</h4>
+                </div>
+                <div class="desc">
+                  Bạn cần phải tạo ít nhât một danh mục trước khi tạo chi tiêu!
+                </div>
+              </div>
+            {% endif %}
+            {% if wallet_error_1 %}
+              <div class="bottom">
+                <a class="btn btn-primary btn-sm margin btn-icon" href="{{ url_for('users.wallet', user_id=current_user.id) }}">
+                  <i class="bi bi-wallet2"></i>
+                </a>
+              </div>
+            {% elif wallet_error_2%}
+              <div class="bottom">
+                <a class="btn btn-primary btn-sm margin btn-icon" href="{{ url_for('users.item', user_id=current_user.id) }}">
+                  <i class="bi bi-list-task"></i>
+                </a>
+              </div>
+            {% elif item_error_1%}
+              <div class="bottom">
+                <a class="btn btn-primary btn-sm margin btn-icon" href="{{ url_for('wallets.create', user_id=current_user.id) }}">
+                  <i class="bi bi-wallet2"></i>
+                </a>
+              </div>
+            {% elif item_error_2%}
+              <div class="bottom">
+                <a class="btn btn-primary btn-sm margin btn-icon" href="{{ url_for('users.expense', user_id=current_user.id) }}">
+                  <i class="bi bi-coin"></i>
+                </a>
+              </div>
+            {% elif expense_error_1%}
+              <div class="bottom">
+                <a class="btn btn-primary btn-sm margin btn-icon" href="{{ url_for('items.add', user_id=current_user.id) }}">
+                  <i class="bi bi-list-task"></i>
+                </a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        <div class="col-sm-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,68 @@
+{% extends 'base-2.html' %} {% block title %} Create Wallet {% endblock title %}
+{%block breadcrumb %}
+<div class="content-breadcrumb">
+  <ul class="breadcrumb">
+    <li>
+      <a href="{{ url_for('core.home', user_id=current_user.id) }}"
+        >Trang chủ</a
+      >
+    </li>
+    <li><a href="#">{{ current_user.username }}</a></li>
+    <li>Tạo ví</li>
+  </ul>
+</div>
+{% endblock breadcrumb %}
+{%block content %}
+<div class="content-home">
+  <div class="container">
+    <!--error card-->
+    <div class="row">
+      <div class="col-sm-3"></div>
+      <div class="col-sm-6">
+        <div class="card hovercard">
+          <div class="cardheader-wallet"></div>
+          <div class="avatar">
+            <a href="#">
+              <img
+                alt=""
+                src="{{ url_for('static', filename='icons/wallet-icon.svg') }}"
+              />
+            </a>
+          </div>
+          <div class="info">
+            <div class="title">
+              
+            </div>
+            <div class="container" align="left">
+              <form method="POST">
+                {{ form.hidden_tag() }}
+                <div class="row">
+                  <div class="col-sm-12">
+                    <label class="form-label" for="name">Tên ví</label>
+                    {{form.name(class="form-control") }} {{ render_error(form.name) }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-12">
+                    <label class="form-label" for="balance">Ngân sách</label>
+                    {{form.balance(class="form-control") }} {{ render_error(form.balance) }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-12">
+                    <label class="form-label" for="filter">Bộ lọc thống kê</label>
+                    {{form.filter(class="form-control") }} {{ render_error(form.filter) }}
+                  </div>
+                <div class="col-12 button-center">{{ form.submit(class="btn btn-primary", value="Tạo") }}</div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-3"></div>
+  </div>
+    <!--error card-->
+  </div>
+</div>
+{% endblock content %}
+

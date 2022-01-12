@@ -1,0 +1,86 @@
+{% extends 'base-2.html' %} {% block title %} Wallets {% endblock title %} 
+{%block breadcrumb %}
+<div class="content-breadcrumb">
+  <ul class="breadcrumb">
+    <li>
+      <a href="{{ url_for('core.home', user_id=current_user.id) }}"
+        >Trang chủ</a
+      >
+    </li>
+    <li><a href="#">{{ current_user.username }}</a></li>
+    <li>Ví</li>
+  </ul>
+</div>
+{% endblock breadcrumb %}
+{%block content %}
+<div class="content-home">
+  <div class="container">
+    <div class="row">
+    <!--list all user wallets-->
+    {% for wallet in wallets %}
+      <div class="col-sm-3">
+        <div class="card hovercard wallet">
+          <div class="cardheader-wallet"></div>
+          <div class="avatar">
+            <a href="{{ url_for('wallets.manage', user_id=current_user.id, wallet_id=wallet.id) }}">
+              <img
+                alt=""
+                src="{{ url_for('static', filename='icons/wallet-icon.svg') }}"
+              />
+            </a>
+          </div>
+          <div class="info">
+            <div class="title"><h4 class="color">{{ wallet.name }}</h4></div>
+            <div class="desc"><h5>Số dư</h5></div>
+            <div class="desc"><h4><span>{{ "{:,.0f}".format(wallet.balance) }}&#8363;</span></h4></div>
+            <div class="desc"></div>
+          </div>
+          <div class="bottom nopadding">
+            <a
+              class="btn btn-primary btn-sm margin btn-icon"
+              href="{{ url_for('wallets.add', wallet_id=wallet.id) }}"
+            >
+              <i class="bi-clipboard-plus"></i>
+            </a>
+            <a
+            class="btn btn-primary btn-sm margin btn-icon"
+            href="{{ url_for('wallets.update', user_id=current_user.id, wallet_id=wallet.id) }}"
+            >
+              <i class="bi bi-pencil"></i>
+            </a>
+            <a
+              class="btn btn-danger btn-sm margin btn-icon"
+              rel="publisher"
+              href="{{ url_for('wallets.delete', wallet_id=wallet.id) }}" onclick="return confirm('Bạn có muốn xoá ví {{ wallet.name }}?');"
+            >
+              <i class="bi bi-trash"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      <!--list all user wallets-->
+      {% endfor %}
+      <!--Create wallet-->
+      <div class="col-sm-3">
+        <div class="card hovercard wallet">
+          <div class="cardheader-add-wallet"></div>
+          <div class="avatar">
+            <a href="{{ url_for('wallets.create', user_id=current_user.id) }}">
+              <img
+                alt=""
+                src="{{ url_for('static', filename='icons/add-icon.svg') }}"
+              />
+            </a>
+          </div>
+          <div class="info">
+            <div class="title">
+              <p><h4>Tạo ví mới</h4></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--Create wallet-->
+    </div>
+  </div>
+</div>
+{% endblock content %}
