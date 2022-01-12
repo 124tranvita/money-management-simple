@@ -166,7 +166,7 @@ class Expenditure(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   name = db.Column(db.String(32), nullable=False)
   date = db.Column(db.Date, nullable=False, default=datetime.utcnow().strftime('%Y-%m-%d'))
-  description = db.Column(db.Text(128), nullable=False, default='Không có miêu tả nào')
+  description = db.Column(db.String(128), nullable=False, default='Không có miêu tả nào')
   amount = db.Column(db.Integer, nullable=False, default=0)
   # Use Item id as the foreign key
   item_id = db.Column(db.Integer, db.ForeignKey('items.id'))
