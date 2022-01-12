@@ -53,3 +53,10 @@ def item_required():
     Cảnh báo xảy ra khi người dùng tạo khoản chi nhưng chưa tạo danh mục cho khoản chi
     '''
     return render_template('errors/errors.html', expense_error_1=True)
+
+@errors_page.route('/errors/not_support')
+def not_support():
+    '''
+    Cảnh báo xảy ra khi người dùng tạo khoản chi nhưng chưa tạo danh mục cho khoản chi
+    '''
+    return render_template('errors/errors.html', manage_error_1=True)

@@ -125,7 +125,7 @@ def manage(user_id, wallet_id):
   tb_page = request.args.get('tb_page', 1, type=int)
   # Lọc date theo filter đã được chọn bởi user
   if wallet.filter == 1:
-    pass
+    return redirect(url_for('errors.not_support'))
 
   if wallet.filter == 2:
     date = date.strftime('%Y-%m')

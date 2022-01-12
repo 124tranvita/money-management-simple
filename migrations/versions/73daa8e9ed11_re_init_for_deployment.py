@@ -1,8 +1,8 @@
-"""re-init
+"""re-init for deployment
 
-Revision ID: e34658db0586
+Revision ID: 73daa8e9ed11
 Revises: 
-Create Date: 2022-01-07 00:17:32.179213
+Create Date: 2022-01-12 11:18:43.869926
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'e34658db0586'
+revision = '73daa8e9ed11'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -30,7 +30,7 @@ def upgrade():
     op.create_index(op.f('ix_users_username'), 'users', ['username'], unique=True)
     op.create_table('wallets',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=32), nullable=False),
+    sa.Column('name', sa.String(length=16), nullable=False),
     sa.Column('balance', sa.Integer(), nullable=False),
     sa.Column('date', sa.DateTime(), nullable=True),
     sa.Column('filter', sa.Integer(), nullable=False),
@@ -40,18 +40,30 @@ def upgrade():
     )
     op.create_table('items',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=64), nullable=False),
+    sa.Column('name', sa.String(length=32), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('wallet_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['wallet_id'], ['wallets.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('moneysaving',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('date', sa.DateTime(), nullable=False),
+    sa.Column('saving', sa.Integer(), nullable=False),
+    sa.Column('description', sa.String(length=128), nullable=True),
+    sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.Column('wallet_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['wallet_id'], ['wallets.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_moneysaving_date'), 'moneysaving', ['date'], unique=True)
     op.create_table('trackbalances',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('date', sa.DateTime(), nullable=False),
     sa.Column('balance', sa.Integer(), nullable=False),
-    sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('description', sa.String(length=128), nullable=True),
     sa.Column('wallet_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['wallet_id'], ['wallets.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -59,9 +71,9 @@ def upgrade():
     op.create_index(op.f('ix_trackbalances_date'), 'trackbalances', ['date'], unique=True)
     op.create_table('expenditures',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=64), nullable=False),
+    sa.Column('name', sa.String(length=32), nullable=False),
     sa.Column('date', sa.Date(), nullable=False),
-    sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('description', sa.Text(length=128), nullable=False),
     sa.Column('amount', sa.Integer(), nullable=False),
     sa.Column('item_id', sa.Integer(), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=True),
@@ -77,6 +89,8 @@ def downgrade():
     op.drop_table('expenditures')
     op.drop_index(op.f('ix_trackbalances_date'), table_name='trackbalances')
     op.drop_table('trackbalances')
+    op.drop_index(op.f('ix_moneysaving_date'), table_name='moneysaving')
+    op.drop_table('moneysaving')
     op.drop_table('items')
     op.drop_table('wallets')
     op.drop_index(op.f('ix_users_username'), table_name='users')
