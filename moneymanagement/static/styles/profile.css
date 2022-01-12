@@ -192,7 +192,7 @@
 }
 
 .card.hovercard .cardheader {
-  background: url("https://mdbcdn.b-cdn.net/img/new/standard/nature/111.webp");
+  background-color: #00b0f0;
   background-size: cover;
   height: 135px;
 }
