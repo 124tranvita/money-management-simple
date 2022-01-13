@@ -30,9 +30,6 @@ def home(user_id):
 
   # Nếu người dùng hiện tại chưa có ví -> show warning message yêu cầu tạo ví
   if not Wallet.query.filter_by(user_id=user_id).first():
-    # Nếu người dùng chưa có ví, đặc giá trị của session là 0
-    session['balance'] = 0
-    session['current_money'] = 0
     return redirect(url_for('errors.wallet_require'))
 
   # Khởi tạo biến 'date' và dùng hàm datetime.utcnow() để lưu thời gian hiện tại
@@ -43,13 +40,6 @@ def home(user_id):
   items = Item.query.filter_by(user_id=user_id)
   # Lấy bản thống kê các khoản thu nhập từ ví dựa vào wallet id
   tracks = TrackBalance.query.filter_by(wallet_id=wallet.id)
-
-  '''
-  Tính số dư còn lại trong tháng của người dùng sao đó đưa vào session.
-  Dùng session để hiện thông tin lên User Card ở Base-2.html
-  '''
-  session['balance'] = wallet.balance_in_period(date)
-  session['current_money'] = wallet.balance_in_period(date) - current_user.expenses_amount_in_period(date)
   
   # Lấy danh sách các khoản chi từ database và lọc theo tháng hiện tại, sắp xếp theo thời gian mới nhất
   expenses_date = Expenditure.query.filter(Expenditure.user_id == user_id).filter(extract('year', Expenditure.date) == int(date[:4])).filter(extract('month', Expenditure.date) == int(date[5:])).order_by(Expenditure.date.desc())

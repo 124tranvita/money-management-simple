@@ -1,6 +1,6 @@
 # __init__.py
 import os
-import re
+from datetime import datetime
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -15,11 +15,12 @@ app.config['SECRET_KEY'] = 'my_secret_key'
 ### CONFIGURE SQLACHEMY DATABASE ###
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-uri = os.getenv('DATABASE_URL')
-if uri.startswith('postgres://'):
-  uri = uri.replace("postgres://", "postgresql://", 1)
+# uri = os.getenv('DATABASE_URL')
+# if uri.startswith('postgres://'):
+#   uri = uri.replace("postgres://", "postgresql://", 1)
   
-app.config['SQLALCHEMY_DATABASE_URI'] = uri or 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
+# app.config['SQLALCHEMY_DATABASE_URI'] = uri or 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -48,3 +49,8 @@ app.register_blueprint(wallets_blueprint)
 app.register_blueprint(items_blueprint)
 app.register_blueprint(expenses_blueprint)
 app.register_blueprint(errors_page)
+
+### APP CONTEXT PROCESSOR ###
+@app.context_processor
+def inject_now():
+    return {'now': datetime.utcnow()}

@@ -129,5 +129,3 @@ def expense_filter(user_id, date_from, date_to):
   expenses = Expenditure.query.filter(Expenditure.user_id == user_id).filter(Expenditure.date >= date_from).filter(Expenditure.date <= date_to).order_by(Expenditure.date.desc()).paginate(page=page, per_page=5)
 
   return render_template('users/expense.html', expenses=expenses)
-
-

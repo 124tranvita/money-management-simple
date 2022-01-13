@@ -50,6 +50,23 @@ class User(db.Model, UserMixin):
         amount += expense.amount
     return amount
 
+     # Hàm tính tổng ngân sách của ví
+  def total_balance(self):
+    total = 0
+    for wallet in self.wallets:
+      for track in wallet.track_balances:
+        total += track.balance
+    return total
+
+  # Hàm tính tổng ngân sách của ví theo khoảng thời gian (tháng, năm)
+  def total_balance_in_period(self, date):
+    total = 0
+    for wallet in self.wallets:
+      for track in wallet.track_balances:
+        if date in track.date.strftime('%Y-%m-%d'):
+          total += track.balance
+    return total
+
   # Hàm tính tổng số dư của ví
   def rest_balance(self):
     total_balance = 0
@@ -106,24 +123,24 @@ class Wallet(db.Model):
   def __repr__(self) -> str:
     return f'Account owner:   {self.owner.username}\nAccount balance: ${self.balance}'
 
-  # Add money to wallet
+  # Hàm để nhập tiền vào ví
   def deposit(self, amount) -> int:
     self.balance += amount
     print('Deposit Accepted')
 
-  # Withdraw money from wallet
+  # Hàm để rút tiền ra khỏi ví
   def withdraw(self, amount) -> int:
     self.balance -= amount
     print('Withdrawal Accepted')
 
-  # Total added balance
+  # Hàm để tính tổng ngân sách của ví
   def total_balance(self):
     total = 0
     for track in self.track_balances:
       total += track.balance
     return total
 
-  # Total balance in specific period
+  # Hàm để tính tổng ngân sách của ví theo 1 thời gian nhất định (tháng/năm)
   def balance_in_period(self, date):
     total = 0
     for track in self.track_balances:
@@ -131,7 +148,6 @@ class Wallet(db.Model):
         total += track.balance
     return total
 
-  # Load balance in specific period time
   
 ### ITEM MODEL ###
 class Item(db.Model):
