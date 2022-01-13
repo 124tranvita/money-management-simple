@@ -1,11 +1,11 @@
 # expenses/views.py
 from flask import Blueprint, render_template, redirect, url_for, flash, abort, request
 from flask_login import current_user, login_required
-from sqlalchemy import extract
 from moneymanagement import db
 from moneymanagement.models import Expenditure, Item, Wallet
 from moneymanagement.expenses.forms import AddExpenditureForm, UpdateExpenditureForm, FilterByTimeForm
 
+# Tạo blueprint cho expense views
 expenses_blueprint = Blueprint('expenses', __name__)
 
 # Thêm khoản chi
@@ -15,6 +15,7 @@ def add(user_id):
   # Kiểm tra id của người dùng hiện tại có trùng với id nhận vào hay không, nếu không -> 403 error
   if current_user.id != user_id:
     abort(403)
+
   # Kiểm tra người dùng đã tạo danh mục nào hay chưa, nếu chưa -> show warning
   if not Item.query.filter_by(user_id = user_id).first():
     return redirect(url_for('errors.item_required'))
@@ -27,11 +28,9 @@ def add(user_id):
                           description=form.description.data,
                           amount=form.amount.data,
                           item_id=form.item_id.data.id,
-                          user_id=user_id)
+                          user_id=user_id,
+                          wallet_id=form.item_id.data.wallet_id)
     db.session.add(expense)
-    # Cập nhật số dư còn lại trong ví
-    wallet = Wallet.query.filter_by(user_id=user_id).first()
-    wallet.withdraw(wallet.owner.expenses_amount_in_sum())
     db.session.commit()
     flash('Đã thêm khoản chi!')
 
@@ -42,6 +41,10 @@ def add(user_id):
 @expenses_blueprint.route('/<int:user_id>/<int:expense_id>/update_expense', methods=['GET', 'POST'])
 @login_required
 def update(user_id, expense_id):
+  # Kiểm tra id của người dùng hiện tại có trùng với id nhận vào hay không, nếu không -> 403 error
+  if current_user.id != user_id:
+    abort(403)
+
   # Lấy thông tin khoản chi từ database
   expense = Expenditure.query.filter_by(user_id=user_id, id=expense_id).first_or_404()
 
@@ -54,14 +57,7 @@ def update(user_id, expense_id):
     expense.description = form.description.data
     expense.amount = form.amount.data
     expense.item_id = form.item_id.data.id
-    # Cập nhật lại số dư của ví
-    wallet = Wallet.query.filter_by(user_id=user_id).first()
-    if expense.amount < form.amount.data:
-      wallet.withdraw(form.amount.data - expense.amount)
-    
-    if expense.amount > form.amount.data:
-      wallet.deposit(expense.amount - form.amount.data)
-
+    expense.wallet_id = form.item_id.data.wallet_id
     db.session.commit()
     flash('Khoản chi đã được cập nhật!')
     return redirect(url_for('users.expense', user_id=user_id))
@@ -83,9 +79,6 @@ def delete(expense_id):
   expense = Expenditure.query.filter_by(user_id=current_user.id, id=expense_id).first_or_404()
   # Xoá khoản chi
   db.session.delete(expense)
-  # Cập nhật lại số dư sau khi khoản chi được xoá
-  wallet = Wallet.query.filter_by(user_id=current_user.id).first()
-  wallet.deposit(expense.amount)
   db.session.commit()
   flash('Khoản chi đã được xoá!')
 
@@ -95,14 +88,15 @@ def delete(expense_id):
 @expenses_blueprint.route('/<int:user_id>/delete_all_expense')
 @login_required
 def delete_all(user_id):
+  # Kiểm tra id của người dùng hiện tại có trùng với id nhận vào hay không, nếu không -> 403 error
+  if current_user.id != user_id:
+    abort(403)
+
   # Lấy tất cả các khoản chi của người dùng
   expenses = Expenditure.query.filter_by(user_id=user_id)
   # Xoá tất cả các khoản chi
   for expense in expenses:
     db.session.delete(expense)
-    # Cập nhật lại số dư sau khi khoản chi được xoá
-    wallet = Wallet.query.filter_by(user_id=user_id).first()
-    wallet.deposit(expense.amount)
 
   db.session.commit()
   flash('Tất cả khoản chi đã được xoá!')
@@ -124,6 +118,5 @@ def filter(user_id):
     date_to = form.date_to.data.strftime('%Y-%m-%d')
       
     return redirect(url_for('users.expense_filter', user_id=user_id, date_from=date_from, date_to=date_to))
-  
   return render_template('filter.html', form=form, user_id=user_id)
   

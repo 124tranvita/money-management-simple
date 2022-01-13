@@ -60,3 +60,10 @@ def not_support():
     Cảnh báo xảy ra khi người dùng tạo khoản chi nhưng chưa tạo danh mục cho khoản chi
     '''
     return render_template('errors/errors.html', manage_error_1=True)
+
+@errors_page.route('/errors/balance_delete_error')
+def balance_delete_error():
+    '''
+    Cảnh báo xảy ra khi người dùng xoá track balance đầu tiên (được khởi tạo cùng ví)
+    '''
+    return render_template('errors/errors.html', balance_delete_error=True)

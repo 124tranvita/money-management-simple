@@ -2,11 +2,11 @@
 from datetime import datetime
 from flask_wtf import FlaskForm
 from flask_login import current_user
-from wtforms import StringField, TextAreaField, IntegerField, SubmitField, SelectField
+from wtforms import StringField, TextAreaField, IntegerField, SubmitField
 from wtforms.fields.html5 import DateField
-from wtforms.validators import DataRequired, Length, ValidationError
+from wtforms.validators import DataRequired, Length
 from wtforms_alchemy.fields import QuerySelectField
-from moneymanagement.models import Item, Expenditure
+from moneymanagement.models import Item
 
 class AddExpenditureForm(FlaskForm):
   name = StringField('Name', validators=[DataRequired(), Length(min=1, max=32)])

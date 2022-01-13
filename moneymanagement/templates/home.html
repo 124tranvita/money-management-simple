@@ -24,7 +24,7 @@
                 <div class="user-info__basic">
                   <h5 class="mb-0">{{ wallet.name }}</h5>
                   <p class="text-muted mb-0">
-                    {{ "{:,.0f}".format(wallet.balance_in_period(date)) }}<span
+                    {{ "{:,.0f}".format(wallet.total_balance_by_date(date)) }}<span
                       >&#8363;</span
                     >
                   </p>
@@ -118,24 +118,24 @@
         <td>
           Khoản đã chi trong tháng, tổng chi là
           <b
-            >{{ "{:,.0f}".format(current_user.expenses_amount_in_period(date))
+            >{{ "{:,.0f}".format(current_user.total_expenses_by_date(date))
             }} <span>&#8363;</span></b
           >
         </td>
       </tr>
-      {% for item in items %} {% if item.amount_in_period(current_user.id, date)
+      {% for item in items %} {% if item.total_amount_by_date(current_user.id, date)
       > 0 %}
       <tr>
         <td valign="top" class="counter">
           <span
-            >{{ item.expense_count_in_period(current_user.id, item.id, date)
+            >{{ item.expense_count_by_date(current_user.id, item.id, date)
             }}</span
           >
         </td>
         <td valign="top">&times;</td>
         <td>
           Khoản đã chi cho danh mục <b>{{item.name}}</b>, tổng chi là <b>{{
-          "{:,.0f}".format(item.amount_in_period(current_user.id, date)) }}<span>&#8363;</span></b
+          "{:,.0f}".format(item.total_amount_by_date(current_user.id, date)) }}<span>&#8363;</span></b
         </td>
       </tr>
       {% endif %} {% endfor %}
@@ -144,7 +144,7 @@
         <td valign="top" class="counter"><span>{{ tracks.count() }}</span></td>
         <td valign="top">&times;</td>
         <td>
-          Khoản thu nhập đã nhận trong tháng, tổng cộng <b>{{ "{:,.0f}".format(wallet.balance_in_period(date)) }}<span>&#8363;</span></b>
+          Khoản thu nhập đã nhận trong tháng, tổng cộng <b>{{ "{:,.0f}".format(wallet.total_balance_by_date(date)) }}<span>&#8363;</span></b>
         </td>
       </tr>
       {% endif %}

@@ -1,8 +1,8 @@
-"""re-init for deployment
+"""add check on TrackBalance
 
-Revision ID: 73daa8e9ed11
+Revision ID: 264a749c6a25
 Revises: 
-Create Date: 2022-01-12 11:18:43.869926
+Create Date: 2022-01-14 00:23:42.290385
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '73daa8e9ed11'
+revision = '264a749c6a25'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -64,6 +64,7 @@ def upgrade():
     sa.Column('date', sa.DateTime(), nullable=False),
     sa.Column('balance', sa.Integer(), nullable=False),
     sa.Column('description', sa.String(length=128), nullable=True),
+    sa.Column('check', sa.Boolean(), nullable=True),
     sa.Column('wallet_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['wallet_id'], ['wallets.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -73,12 +74,14 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=32), nullable=False),
     sa.Column('date', sa.Date(), nullable=False),
-    sa.Column('description', sa.Text(length=128), nullable=False),
+    sa.Column('description', sa.String(length=128), nullable=False),
     sa.Column('amount', sa.Integer(), nullable=False),
     sa.Column('item_id', sa.Integer(), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.Column('wallet_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['item_id'], ['items.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['wallet_id'], ['wallets.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###

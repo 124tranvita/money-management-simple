@@ -82,6 +82,15 @@
                   chọn thống kê theo <b>tháng, năm</b> nhé!
                 </div>
               </div>
+            {% elif balance_delete_error%}
+              <div class="info">
+                <div class="title">
+                  <h4 class="color">Bạn đang xoá khoản được khởi tạo cùng ví!</h4>
+                </div>
+                <div class="desc">
+                  Khoản ngân sách <b>khởi tạo</b> chỉ có thể được xoá cùng ví. Nếu không thật sự cần thiết, bạn có thể <b>chọn, chỉnh sửa</b> ngân sách khởi tạo bằng 0!
+                </div>
+              </div>
             {% endif %}
             {% if wallet_error_1 %}
               <div class="bottom">
@@ -114,6 +123,12 @@
                 </a>
               </div>
             {% elif manage_error_1%}
+              <div class="bottom">
+                <a class="btn btn-primary btn-sm margin btn-icon" href="{{ url_for('users.wallet', user_id=current_user.id) }}">
+                  <i class="bi bi-wallet2"></i>
+                </a>
+              </div>
+            {% elif balance_delete_error%}
               <div class="bottom">
                 <a class="btn btn-primary btn-sm margin btn-icon" href="{{ url_for('users.wallet', user_id=current_user.id) }}">
                   <i class="bi bi-wallet2"></i>

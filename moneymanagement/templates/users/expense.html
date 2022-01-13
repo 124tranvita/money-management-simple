@@ -1,5 +1,10 @@
-{% extends 'base-2.html' %} {% block title %} Expenses {% endblock title %} {%
-block breadcrumb %}
+{% extends 'base-2.html' %}
+<!--Title Block-->
+{% block title %} Khoản chi {% endblock title %}
+<!--Title Block-->
+
+<!--breadcrumb block-->
+{%block breadcrumb %}
 <div class="content-breadcrumb">
   <ul class="breadcrumb">
     <li>
@@ -20,14 +25,19 @@ block breadcrumb %}
     <li>{{ date }}</li>
   </ul>
 </div>
-{% endblock breadcrumb %} {%block content %}
+{% endblock breadcrumb %}
+<!--breadcrumb block-->
+
+<!--Content block-->
+{%block content %}
 <div class="content-home">
-  <!--Add Expense Table-->
+  <!--Add expense table-->
   <section>
-    <table class="table">
+    <table class="table table-add">
       <thead></thead>
       <tbody>
         <tr>
+          <!--Add expense td-->
           <td>
             <a href="{{ url_for('expenses.add', user_id=current_user.id) }}">
               <div class="user-info">
@@ -44,7 +54,9 @@ block breadcrumb %}
               </div>
             </a>
           </td>
+          <!--Add expense td-->
           <td></td>
+          <!--Total expense td-->
           <td>
             <a href="#">
               <div class="user-info">
@@ -58,17 +70,18 @@ block breadcrumb %}
             <a href="#">
               <h5 class="mb-0">
                 {% if expense_by_item %} {{
-                "{:,.0f}".format(item.amount_in_sum(current_user.id)) }}<span
+                "{:,.0f}".format(item.total_amount(current_user.id)) }}<span
                   >&#8363;</span
                 >
                 {% else %} {{
-                "{:,.0f}".format(current_user.expenses_amount_in_sum()) }}<span
-                  >&#8363;</span
-                >
+                "{:,.0f}".format(current_user.total_expenses_by_date(now.strftime('%Y-%m')))
+                }}<span>&#8363;</span>
                 {% endif %}
               </h5>
             </a>
           </td>
+          <!--Total expense td-->
+          <!--Other td-->
           <td align="right">
             <div class="dropdown open">
               <a
@@ -109,15 +122,16 @@ block breadcrumb %}
               </ul>
             </div>
           </td>
+          <!--Other td-->
         </tr>
       </tbody>
     </table>
   </section>
-  <!--Add Expense Table End-->
+  <!--Add expense table-->
 
-  <!--List Expeses Tabel-->
+  <!--Expense table-->
   <section>
-    <table class="table table-striped table-hover">
+    <table class="table table-hover table-add">
       <thead>
         <tr class="btn-primary">
           <th scope="col">Khoản chi</th>
@@ -181,12 +195,11 @@ block breadcrumb %}
             </div>
           </td>
         </tr>
-        <!-- Detail Expense Modal -->
         {% endfor %}
       </tbody>
     </table>
   </section>
-  <!--List Expeses Tabel End-->
+  <!--Expense table-->
 
   <!--Table pagination-->
   <div class="demo">
@@ -234,11 +247,13 @@ block breadcrumb %}
   </div>
   <!--Table pagination end-->
 
+  <!--Tooltip Script-->
   <script>
     $(document).ready(function () {
       $('[data-toggle="tooltip"]').tooltip();
     });
   </script>
-
-  {% endblock content %}
+  <!--Tooltip Script-->
 </div>
+{% endblock content %}
+<!--Content block-->

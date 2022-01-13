@@ -94,7 +94,7 @@ def delete_all(user_id):
   return redirect(url_for('users.item', user_id=current_user.id))
 
 # Liệt kê tất cả các khoản chi thuộc về danh mục
-@items_blueprint.route('/<int:item_id>/item_expenses')
+@items_blueprint.route('/<int:item_id>/item_by_expense')
 @login_required
 def item_expenses(item_id):
   '''
@@ -104,6 +104,7 @@ def item_expenses(item_id):
   # Kiểm tra xem người dùng có item id này hay ko, nếu không -> 404 error
   if not Item.query.filter_by(user_id=current_user.id, id=item_id).first():
     abort(404)
+    
   # Khởi tạo biến page cho pagination
   page = request.args.get('page', 1, type=int)
   # Khởi tạo biến date để lưu thông tin tháng năm hiện tại.

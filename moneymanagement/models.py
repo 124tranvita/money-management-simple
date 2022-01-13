@@ -1,5 +1,6 @@
 # moneymanagement/models.py
 from datetime import datetime
+from tabnanny import check
 from moneymanagement import db, login_manager
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -35,72 +36,30 @@ class User(db.Model, UserMixin):
   def password_check(self, password) -> bool:
     return check_password_hash(self.password_hash, password)
 
-  # Tât cả tổng chi của người dùng
-  def expenses_amount_in_sum(self):
-    amount = 0
-    for expense in self.expenditures:
-      amount += expense.amount
-    return amount
-
-  # Tổng chi của người dùng theo khoản thời gian (ngày/tháng/năm)
-  def expenses_amount_in_period(self, date):
-    amount = 0
-    for expense in self.expenditures:
-      if date in expense.date.strftime('%Y-%m-%d'):
-        amount += expense.amount
-    return amount
-
-     # Hàm tính tổng ngân sách của ví
-  def total_balance(self):
+  # Hàm tính tổng chi của người dùng theo khoản thời gian (tháng-năm)
+  def total_expenses_by_date(self, date):
     total = 0
     for wallet in self.wallets:
-      for track in wallet.track_balances:
-        total += track.balance
+      if date in wallet.date.strftime('%Y-%m-%d'):
+        total += wallet.total_expense_by_date(date)
     return total
 
-  # Hàm tính tổng ngân sách của ví theo khoảng thời gian (tháng, năm)
-  def total_balance_in_period(self, date):
+  # Hàm tính tổng ngân sách của ví người dùng theo khoảng thời gian (tháng-năm)
+  def total_balance_by_date(self, date):
     total = 0
     for wallet in self.wallets:
-      for track in wallet.track_balances:
-        if date in track.date.strftime('%Y-%m-%d'):
-          total += track.balance
+      total += wallet.total_balance_by_date(date)
     return total
 
-  # Hàm tính tổng số dư của ví
-  def rest_balance(self):
-    total_balance = 0
-    total_expense = 0
-    # Tính tổng ngân sách của ví
-    for wallet in self.wallets:
-      for track in wallet.track_balances:
-        total_balance += track.balance
-    # Tính tổng các khoản chi
-    for expense in self.expenditures:
-      total_expense += expense.amount
-    return (total_balance - total_expense)
-
-   # Hàm tính tổng số dư của ví theo thời gian (tháng, năm)
-  def rest_balance_in_period(self, date):
-    total_balance = 0
-    total_expense = 0
-    # Tính tổng ngân sách của ví
-    for wallet in self.wallets:
-      for track in wallet.track_balances:
-        if date in track.date.strftime('%Y-%m-%d'):
-          total_balance += track.balance
-    # Tính tổng các khoản chi
-    for expense in self.expenditures:
-      if date in expense.date.strftime('%Y-%m-%d'):
-        total_expense += expense.amount
-    return (total_balance - total_expense)
+  # Hàm tính tống ngân sách còn lại của người dùng sau khi trừ các khoản đã chi theo khoảng thời gian (tháng-năm)
+  def rest_balance_by_date(self, date):
+    return self.total_balance_by_date(date) - self.total_expenses_by_date(date)
 
 ### WALLET MODEL###
 class Wallet(db.Model):
   __tablename__ = 'wallets'
   id = db.Column(db.Integer, primary_key=True)
   name = db.Column(db.String(16), nullable=False)
-  balance = db.Column(db.Integer, nullable=False, default=0)
   date = db.Column(db.DateTime, default=datetime.utcnow())
   filter = db.Column(db.Integer, nullable=False, default=2)
   # Make user id as foreign key
@@ -111,6 +70,8 @@ class Wallet(db.Model):
   track_balances = db.relationship('TrackBalance', back_populates='wallet', lazy='dynamic')
   # Make a relationship to Wallet table
   items = db.relationship('Item', back_populates='wallet', lazy='dynamic')
+  # Make a relationship to Expenditure table
+  expenditures = db.relationship('Expenditure', back_populates='wallet', lazy='dynamic')
   # Make a relationship to MoneySaving table
   money_saving = db.relationship('MoneySaving', back_populates='wallet', lazy='dynamic')
 
@@ -123,32 +84,44 @@ class Wallet(db.Model):
   def __repr__(self) -> str:
     return f'Account owner:   {self.owner.username}\nAccount balance: ${self.balance}'
 
-  # Hàm để nhập tiền vào ví
-  def deposit(self, amount) -> int:
-    self.balance += amount
-    print('Deposit Accepted')
-
-  # Hàm để rút tiền ra khỏi ví
-  def withdraw(self, amount) -> int:
-    self.balance -= amount
-    print('Withdrawal Accepted')
-
-  # Hàm để tính tổng ngân sách của ví
+  # Hàm tính tổng ngân sách của ví
   def total_balance(self):
     total = 0
     for track in self.track_balances:
       total += track.balance
     return total
 
-  # Hàm để tính tổng ngân sách của ví theo 1 thời gian nhất định (tháng/năm)
-  def balance_in_period(self, date):
+  # Hàm tính tổng ngân sách của ví theo 1 thời gian nhất định (tháng-năm)
+  def total_balance_by_date(self, date):
     total = 0
     for track in self.track_balances:
       if date in track.date.strftime('%Y-%m-%d'):
         total += track.balance
     return total
 
+  # Hàm tính tổng các khoản chi của tất cả các danh mục thuộc ví
+  def total_expense(self):
+    total = 0
+    for expense in self.expenditures:
+      total += expense.amount
+    return total
+
+  # Hàm tính tổng các khoản chi của tất cả các danh mục thuộc ví theo 1 thời gian nhất định (tháng-năm)
+  def total_expense_by_date(self, date):
+    total = 0
+    for expense in self.expenditures:
+      if date in expense.date.strftime('%Y-%m-%d'):
+        total += expense.amount
+    return total
   
+  # Hàm tính ngân sách còn lại của ví
+  def rest_balance(self):
+    return self.total_balance - self.total_expense
+
+  # Hàm tính ngân sách còn lại của ví theo 1 thời gian nhất định (tháng-năm)
+  def rest_balance_by_date(self, date):
+    return self.total_balance_by_date(date) - self.total_expense_by_date(date)
+
 ### ITEM MODEL ###
 class Item(db.Model):
   __tablename__ = 'items'
@@ -161,7 +134,7 @@ class Item(db.Model):
   # Make a relationship to User table
   users = db.relationship('User', back_populates='items',uselist=False)
   # Make a relationship to Expenditure table
-  expenditures = db.relationship('Expenditure', back_populates='items', lazy=True)
+  expenditures = db.relationship('Expenditure', back_populates='items', lazy='dynamic')
   # Make a relationship to Wallet table
   wallet = db.relationship('Wallet', back_populates='items', uselist=False)
 
@@ -170,30 +143,21 @@ class Item(db.Model):
     self.user_id = user_id
     self.wallet_id = wallet_id
 
-  # Tính tổng chi của từng danh mục (tất cả)
-  def amount_in_sum(self, user_id):
-    amount = 0
-    for expense in self.expenditures:
-      if expense.user_id == user_id:
-        amount += expense.amount
-    return amount
-
-  # Tính tổng chi của từng danh mục (theo khoảng thời gian cố định (tháng, năm))
-  def amount_in_period(self, user_id, date):
-    amount = 0
-    for expense in self.expenditures:
-      if expense.user_id == user_id:
-        if date in expense.date.strftime('%Y-%m-%d'):
-          amount += expense.amount
-    return amount
-
-  # Đếm các khoản chi thuộc từng danh mục theo tháng
-  def expense_count_in_period(self, user_id, item_id, date):
+  # Tính tổng chi của từng danh mục
+  def total_amount(self, user_id):
     total = 0
     for expense in self.expenditures:
-      if expense.user_id == user_id and expense.item_id == item_id:
+      if expense.user_id == user_id:
+        total += expense.amount
+    return total
+
+  # Tính tổng chi của từng danh mục (theo khoảng thời gian cố định (tháng-năm)
+  def total_amount_by_date(self, user_id, date):
+    total = 0
+    for expense in self.expenditures:
+      if expense.user_id == user_id:
         if date in expense.date.strftime('%Y-%m-%d'):
-          total += 1
+          total += expense.amount
     return total
 
   # Đếm tất cả các khoản chi thuộc từng danh mục
@@ -202,6 +166,15 @@ class Item(db.Model):
     for expense in self.expenditures:
       if expense.user_id == user_id and expense.item_id == item_id:
         total += 1
+    return total
+
+  # Đếm các khoản chi thuộc từng danh mục theo tháng
+  def expense_count_by_date(self, user_id, item_id, date):
+    total = 0
+    for expense in self.expenditures:
+      if expense.user_id == user_id and expense.item_id == item_id:
+        if date in expense.date.strftime('%Y-%m-%d'):
+          total += 1
     return total
     
 ### Expenditure Model ###
@@ -220,14 +193,19 @@ class Expenditure(db.Model):
   user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
   # Make a relationship to User table
   users = db.relationship('User', back_populates='expenditures', uselist=False)
+  # Use User id as the foreign key
+  wallet_id = db.Column(db.Integer, db.ForeignKey('wallets.id'))
+  # Make a relationship to Wallet table
+  wallet = db.relationship('Wallet', back_populates='expenditures', uselist=False)
 
-  def __init__(self, name, date, description, amount, item_id, user_id) -> None:
+  def __init__(self, name, date, description, amount, item_id, user_id, wallet_id) -> None:
     self.name = name
     self.date = date
     self.description = description
     self.amount = amount
     self.item_id = item_id
     self.user_id = user_id
+    self.wallet_id = wallet_id
   
 ### TRACK THE BALANCE IN THE WALLET MODEL ###
 class TrackBalance(db.Model):
@@ -236,15 +214,17 @@ class TrackBalance(db.Model):
   date = db.Column(db.DateTime, nullable=False, unique=True, index=True)
   balance = db.Column(db.Integer, nullable=False, default=0)
   description = db.Column(db.String(128))
+  check = db.Column(db.Boolean, default=False)
   # Use Wallet id as the foreign key
   wallet_id = db.Column(db.Integer, db.ForeignKey('wallets.id'))
   # Make a relationship to Wallet table
   wallet = db.relationship('Wallet', back_populates='track_balances', uselist=False)
 
-  def __init__(self, date, balance, description, wallet_id) -> None:
+  def __init__(self, date, balance, description, check, wallet_id) -> None:
     self.date = date
     self.balance = balance
     self.description = description
+    self.check = check
     self.wallet_id = wallet_id
 
 ### MONEY SAVING MODEL ###

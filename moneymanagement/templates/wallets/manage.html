@@ -17,56 +17,64 @@
 <div class="content-home">
   <!--Wallet summry table-->
   <section>
-    <div class="">
       <table class="table table-add">
         <thead>
         </thead>
         <tbody>
           <tr>
+            <!--wallet name-->
             <td>
               <a href="#">
-              <div class="user-info">
-                <div class="user-info__img">
-                  <a href="#" onclick="return confirm('Bạn có muốn tất toán ví cho tháng này?');">
-                    <img
-                      src="{{ url_for('static', filename='icons/wallet-icon.svg') }}"
-                      alt="Expense Icon"
-                    />
-                  </a>
+                <div class="user-info">
+                  <div class="user-info__img">
+                    <a href="#" onclick="return confirm('Bạn có muốn tất toán ví cho tháng này?');">
+                      <img
+                        src="{{ url_for('static', filename='icons/wallet-icon.svg') }}"
+                        alt="Expense Icon"
+                      />
+                    </a>
+                  </div>
+                  <div class="user-info__basic">
+                    <h5 class="mb-0">{{ wallet.name }}</h5>
+                    <p class="text-muted mb-0">{{ date }}</p>
+                  </div>
                 </div>
-                <div class="user-info__basic">
-                  <h5 class="mb-0">{{ wallet.name }}</h5>
-                  <p class="text-muted mb-0">{{ date }}</p>
-                </div>
-              </div>
-            </a>
+              </a>
             </td>
+            <!--wallet name-->
+            <!--wallet balance-->
             <td>
               <a href="#">
                 <div class="user-info">
                   <div class="user-info__basic">
-                    <h5 class="mb-0">{{ "{:,.0f}".format(wallet.balance_in_period(date)) }}<span>&#8363;</span></h5>
+                    <h5 class="mb-0">{{ "{:,.0f}".format(wallet.total_balance_by_date(date)) }}<span>&#8363;</span></h5>
                       <p class="text-muted mb-0">Ngân sách</p>
                   </div>
                 </div>
               </a>
             </td>
+            <!--wallet balance-->
+            <!--wallet expensed-->
             <td>
               <a href="#">
-                <h5 class="mb-0">{{ "{:,.0f}".format(current_user.expenses_amount_in_period(date)) }}<span>&#8363;</span></h5>
+                <h5 class="mb-0">{{ "{:,.0f}".format(wallet.total_expense_by_date(date)) }}<span>&#8363;</span></h5>
                 <p class="text-muted mb-0">Đã chi</p>
               </a>
             </td>
+            <!--wallet expensed-->
+            <!--rest balance-->
             <td>
               <a href="#">
                 <div class="user-info">
                   <div class="user-info__basic">
-                    <h5 class="mb-0">{{ "{:,.0f}".format(wallet.balance_in_period(date) - current_user.expenses_amount_in_period(date)) }}<span>&#8363;</span></h5>
+                    <h5 class="mb-0">{{ "{:,.0f}".format(wallet.rest_balance_by_date(date)) }}<span>&#8363;</span></h5>
                       <p class="text-muted mb-0">Còn lại</p>
                   </div>
                 </div>
               </a>
             </td>
+            <!--rest balance-->
+            <!--other-->
             <td>
               <div class="dropdown open">
                 <a class="dropdown-toggle" href="#" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
@@ -74,7 +82,7 @@
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                   <li>
-                    <a class="dropdown-item" href="{{ url_for('wallets.add', wallet_id=wallet.id) }}">
+                    <a class="dropdown-item" href="{{ url_for('wallets.add_balance', user_id=current_user.id, wallet_id=wallet.id) }}">
                     <i class="bi bi-bag-plus-fill"></i> Thêm ngân sách
                     </a>
                   </li>
@@ -95,17 +103,17 @@
                 </ul>
               </div>
             </td>
+            <!--other-->
           </tr>
         </tbody>
       </table>
-    </div>
   </section>
   <!--Wallet summry table end-->
 
   <!--Track wallet's balance table-->
   <section>
     <div class="">
-      <table class="table table-hover">
+      <table class="table table-hover table-add">
         <thead>
         </thead>
           <tbody>
@@ -141,12 +149,12 @@
                   </a>
                   <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                     <li>
-                      <a class="dropdown-item" href="#">
+                      <a class="dropdown-item" href="{{ url_for('wallets.update_balance', user_id=current_user.id, wallet_id=wallet.id, track_id=track.id)}}">
                       <i class="fa fa-pencil mr-1"></i> Chỉnh sửa
                       </a>
                     </li>
                     <li>
-                      <a class="dropdown-item text-danger" href="#" onclick="return confirm('Bạn có muốn xoá danh mục?');">
+                      <a class="dropdown-item text-danger" href="{{ url_for('wallets.delete_balance', user_id=current_user.id, wallet_id=wallet.id, track_id=track.id)}}" onclick="return confirm('Bạn có muốn xoá {{ track.balance }} ngân sách?');">
                       <i class="fa fa-trash mr-1"></i> Xoá
                       </a>
                   </ul>
@@ -230,7 +238,7 @@
                   />
                 </div>
                 <div class="user-info__basic">
-                  <h5 class="mb-0"><span>-</span>{{ "{:,.0f}".format(item.amount_in_period(current_user.id, date)) }}<span>&#8363;</span></h5>
+                  <h5 class="mb-0"><span>-</span>{{ "{:,.0f}".format(item.total_amount_by_date(current_user.id, date)) }}<span>&#8363;</span></h5>
                   <p class="text-muted mb-0">{{ item.name }}</p>
                 </div>
               </div>

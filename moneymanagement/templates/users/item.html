@@ -1,5 +1,10 @@
-{% extends 'base-2.html' %} {% block title %} Items {% endblock title %} {%block
-breadcrumb %}
+{% extends 'base-2.html' %}
+<!--block title-->
+{% block title %} Danh mục {% endblock title %}
+<!--block title-->
+
+<!--block breadcrumb-->
+{%block breadcrumb %}
 <div class="content-breadcrumb">
   <ul class="breadcrumb">
     <li>
@@ -11,14 +16,19 @@ breadcrumb %}
     <li>Các danh mục</li>
   </ul>
 </div>
-{% endblock breadcrumb %} {%block content %}
+{% endblock breadcrumb %}
+<!--block breadcrumb-->
+
+<!--block content-->
+{%block content %}
 <div class="content-home">
-  <!--Add Item Table-->
+  <!--add item table-->
   <section>
-    <table class="table">
+    <table class="table table-add">
       <thead></thead>
       <tbody>
         <tr>
+          <!--add item td-->
           <td>
             <a href="{{ url_for('items.add', user_id=current_user.id) }}">
               <div class="user-info">
@@ -35,8 +45,10 @@ breadcrumb %}
               </div>
             </a>
           </td>
+          <!--add item td-->
           <td></td>
           <td></td>
+          <!--other td-->
           <td align="right">
             <div class="dropdown open">
               <a
@@ -69,15 +81,16 @@ breadcrumb %}
               </ul>
             </div>
           </td>
+          <!--other td-->
         </tr>
       </tbody>
     </table>
   </section>
-  <!--Add Item Table End-->
+  <!--add item table-->
 
-  <!--List Items Tabel-->
+  <!--item table-->
   <section>
-    <table class="table table-striped table-hover">
+    <table class="table table-hover table-add">
       <thead>
         <tr class="btn-primary">
           <th scope="col">Danh mục</th>
@@ -116,7 +129,8 @@ breadcrumb %}
             </p>
           </td>
           <td>
-            {{ "{:,.0f}".format(item.amount_in_period(user_id=current_user.id,
+            {{
+            "{:,.0f}".format(item.total_amount_by_date(user_id=current_user.id,
             date=date)) }}<span>&#8363;</span>
           </td>
           <td>
@@ -156,7 +170,7 @@ breadcrumb %}
       </tbody>
     </table>
   </section>
-  <!--List Items Tabel End-->
+  <!--item table-->
 
   <!--Table pagination-->
   <div class="demo">
@@ -249,3 +263,4 @@ breadcrumb %}
   <!--Table pagination end-->
 </div>
 {% endblock content %}
+<!--block content-->

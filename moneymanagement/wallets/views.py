@@ -4,15 +4,16 @@ from flask import Blueprint, redirect, render_template, url_for, flash, request,
 from flask_login import login_required, current_user
 from sqlalchemy import extract
 from moneymanagement import db
-from moneymanagement.models import Expenditure, Item, Wallet, TrackBalance, MoneySaving
-from moneymanagement.wallets.forms import CreateWalletForm, AddWalletForm, FilterWalletForm, UpdateWalletForm
+from moneymanagement.models import Item, Wallet, TrackBalance, MoneySaving
+from moneymanagement.wallets.forms import CreateWalletForm, UpdateWalletForm, AddBalanceForm, UpdateBalanceForm 
 
 wallets_blueprint = Blueprint('wallets', __name__)
 
 # Tạo ví
-@wallets_blueprint.route('/<int:user_id>/wallet_create', methods=['GET', 'POST'])
+@wallets_blueprint.route('/<int:user_id>/create_wallet', methods=['GET', 'POST'])
 @login_required
 def create(user_id):
+  # Kiểm tra xem người dùng đã có ví hay chưa, nếu đã có -> warning
   if Wallet.query.filter_by(user_id = user_id).first():
     return redirect(url_for('errors.already_have_wallet'))
 
@@ -31,29 +32,33 @@ def create(user_id):
     new_track = TrackBalance(date=datetime.utcnow(),
                             balance=wallet.balance,
                             description='Khởi tạo',
+                            check=True,
                             wallet_id=wallet.id)
     db.session.add(new_track)
     db.session.commit()
 
     return redirect(url_for('users.wallet', user_id=user_id))
-
   return render_template('wallets/create.html', form=form, user_id=user_id)
 
 # Xoá ví
-@wallets_blueprint.route('/<int:wallet_id>/delete')
+@wallets_blueprint.route('/<int:wallet_id>/delete_wallet')
 @login_required
 def delete(wallet_id):
+  # Lấy thông tin ví từ database
   wallet = Wallet.query.get_or_404(wallet_id)
-  if wallet.items.first():
-    return redirect(url_for('errors.wallet_have_item'))
-
-  track_wallets = TrackBalance.query.filter_by(wallet_id=wallet_id).all()
-
+  # Kiểm tra ví có thuộc người dùng hiện tại hay không, nếu không -> 403
   if current_user.id != wallet.user_id:
     abort(403)
 
+  # Kiểm tra các danh mục được liên kết với ví, nếu vẫn còn danh mục liên kết -> warning
+  if wallet.items.first():
+    return redirect(url_for('errors.wallet_have_item'))
+
+  # Load tất cả cách track balance thuộc ví
+  track_wallets = TrackBalance.query.filter_by(wallet_id=wallet_id).all()
+  # Xoá ví khỏi database
   db.session.delete(wallet)
-  # Delete all track-wallet record belong to wallet
+  # Xoá tất cả các track balance của ví khỏi database khi ví được xoá
   for track_record in track_wallets:
     db.session.delete(track_record)
 
@@ -90,110 +95,106 @@ def update(user_id, wallet_id):
 
   return render_template('wallets/update.html', form=form, wallet=wallet)
 
-# Cập nhật số dư cho ví
-@wallets_blueprint.route('/<int:wallet_id>/add', methods=['GET', 'POST'])
+# Quản lý thông tin chi tiết về ví
+@wallets_blueprint.route('/<int:user_id>/wallet-<int:wallet_id>/manage', methods=['GET', 'POST'])
 @login_required
-def add(wallet_id):
-  form = AddWalletForm()
-  wallet = Wallet.query.get_or_404(wallet_id)
+def manage(user_id, wallet_id):
+  # Kiểm tra xem id của người dùng hiện tại có trùng với id nhận vào hay không, nếu không -> 403 error
+  if current_user.id != user_id:
+    abort(403)
+
+  # Lấy thông tin ví của người dùng dựa vào current user id và wallet id của user
+  wallet = Wallet.query.filter_by(user_id=user_id, id=wallet_id).first_or_404()
+  # Khởi tạo giá trị 'date' và dùng hàm datetime để lấy thời gian hiện tại
+  date = datetime.utcnow()
+  # Khởi tạo giá trị page cho Track Balance table
+  tb_page = request.args.get('tb_page', 1, type=int)
+  # Lọc thông tin theo filter đã được chọn bởi user
+  if wallet.filter == 1: # Theo tuần
+    return redirect(url_for('errors.not_support'))
+
+  if wallet.filter == 2: # Theo tháng
+    date = date.strftime('%Y-%m')
+    # Lọc các track balance theo tháng và năm
+    track_info = TrackBalance.query.filter(TrackBalance.wallet_id == wallet_id).filter(extract('year', TrackBalance.date) == int(date[:4])).filter(extract('month', TrackBalance.date) == int(date[5:])).order_by(TrackBalance.date.desc()).paginate(page=tb_page, per_page=5)
+
+  if wallet.filter == 3: # Theo năm
+    date = date.strftime('%Y')
+    # Lọc các track balance theo năm
+    track_info = TrackBalance.query.filter(TrackBalance.wallet_id == wallet_id).filter(extract('year', TrackBalance.date) == int(date[:4])).order_by(TrackBalance.date.desc()).paginate(page=tb_page, per_page=5)
+
+  # Lấy thông tin về các danh mục liên kết với ví
+  item_info = Item.query.filter_by(user_id=user_id, wallet_id=wallet_id)
+  
+  return render_template('wallets/manage.html', wallet=wallet, track_info=track_info, item_info=item_info, date=date,tb_page=tb_page)
+
+# Thêm ngân sách cho ví
+@wallets_blueprint.route('/<int:user_id>/wallet-<int:wallet_id>/add_balance', methods=['GET', 'POST'])
+@login_required
+def add_balance(user_id, wallet_id):
+  # Kiểm tra xem id của người dùng hiện tại có trùng với id nhận vào hay không, nếu không -> 403 error
+  if current_user.id != user_id:
+    abort(403)
+
+  form = AddBalanceForm()
 
   if form.validate_on_submit():
-    wallet.balance += form.balance.data
-    db.session.commit()
-    flash('Cập nhật số dư thành công!')
     # Tạo record để theo dõi ngân sách đã được thêm vào
     new_track = TrackBalance(date=datetime.utcnow(),
                             balance=form.balance.data,
                             description=form.description.data,
-                            wallet_id=wallet.id)
+                            check=False,
+                            wallet_id=wallet_id)
     db.session.add(new_track)
     db.session.commit()
+    flash('Cập nhật số dư thành công!')
     
     return redirect(url_for('wallets.manage', user_id=current_user.id, wallet_id=wallet_id))
 
-  return render_template('wallets/add.html',form=form, wallet=wallet)
+  return render_template('wallets/add.html',form=form)
 
-# Quản lý thông tin chi tiết về ví
-@wallets_blueprint.route('/<int:user_id>/<int:wallet_id>/manage_wallet', methods=['GET', 'POST'])
-@login_required
-def manage(user_id, wallet_id):
-  # Lấy thông tin ví của người dùng dựa vào current user id và wallet id của user
-  wallet = Wallet.query.filter_by(user_id=user_id, id=wallet_id).first_or_404()
-  # Khởi tạo giá trị và gán tháng và năm hiện tại cho biến (không gán ngày)
-  date = datetime.utcnow()
-  # Khởi tạo giá trị page cho Track Balance table
-  tb_page = request.args.get('tb_page', 1, type=int)
-  # Lọc date theo filter đã được chọn bởi user
-  if wallet.filter == 1:
-    return redirect(url_for('errors.not_support'))
+# Cập nhật ngân sách
+@wallets_blueprint.route('/<int:user_id>/wallet-<int:wallet_id>/<int:track_id>/update_balance', methods=['GET', 'POST'])
+def update_balance(user_id, wallet_id, track_id):
+  # Kiểm tra xem id của người dùng hiện tại có trùng với id nhận vào hay không, nếu không -> 403 error
+  if current_user.id != user_id:
+    abort(403)
 
-  if wallet.filter == 2:
-    date = date.strftime('%Y-%m')
-    # Lọc thông track balance theo tháng và năm trong trường hợp bộ lọc tháng được chọn
-    track_info = TrackBalance.query.filter(TrackBalance.wallet_id == wallet_id).filter(extract('year', TrackBalance.date) == int(date[:4])).filter(extract('month', TrackBalance.date) == int(date[5:])).order_by(TrackBalance.date.desc()).paginate(page=tb_page, per_page=5)
+  # Lấy thông tin của track hiện tại
+  track = TrackBalance.query.filter_by(wallet_id=wallet_id, id=track_id).first_or_404()
 
-  if wallet.filter == 3:
-    date = date.strftime('%Y')
-    # Lọc thông track balance theo năm trong trường hợp bộ lọc năm được chọn
-    track_info = TrackBalance.query.filter(TrackBalance.wallet_id == wallet_id).filter(extract('year', TrackBalance.date) == int(date[:4])).order_by(TrackBalance.date.desc()).paginate(page=tb_page, per_page=5)
+  form = UpdateBalanceForm()
+  if form.validate_on_submit():
+    track.balance = form.balance.data
+    track.description = form.description.data
+    db.session.commit()
+    flash('Cập nhật ngân sách thành công!')
 
-  # Lấy thông tin về các khoản chi của người dùng (sử dụng danh mục chi)
-  item_info = Item.query.filter_by(user_id=user_id)
+    return redirect(url_for('wallets.manage', user_id=user_id, wallet_id=wallet_id))
 
-  # Lọc thông tin các khoản chi dụa vào biến date và điều kiện filter
-  # expense_info = [] # Khởi tạo danh sách chứa các object được query từ Expenditure table dựa theo date condition
-  # expenses = Expenditure.query.filter_by(user_id=user_id)
-  # for expense in expenses:
-  #   if date in expense.date.strftime('%Y-%m-%d'):
-  #     expense_info.append(expense)
+  elif request.method == 'GET':
+    form.balance.data = track.balance
+    form.description.data = track.description
   
-  return render_template('wallets/manage.html', wallet=wallet, track_info=track_info, item_info=item_info, date=date,tb_page=tb_page)
+  return render_template('wallets/add.html', form=form, user_id=user_id, wallet_id=wallet_id)
 
-# # Tạo bộ lọc theo thời gian (tuần, tháng, năm) cho ví
-# @wallets_blueprint.route('/<int:user_id>/<int:wallet_id>/filter', methods=['GET', 'POST'])
-# @login_required
-# def filter(user_id, wallet_id):
-#   # Lấy thông tin ví của người dùng dựa vào current user id và wallet id của user
-#   wallet = Wallet.query.filter_by(user_id=user_id, id=wallet_id).first_or_404()
-#   form = FilterWalletForm()
+# Xoá ngân sách khỏi ví
+@wallets_blueprint.route('/<int:user_id>/wallet-<int:wallet_id>/<int:track_id>/delete_balance')
+def delete_balance(user_id, wallet_id, track_id):
+  # Kiểm tra xem id của người dùng hiện tại có trùng với id nhận vào hay không, nếu không -> 403 error
+  if current_user.id != user_id:
+    abort(403)
 
-#   if form.validate_on_submit():
-#     condition = form.condition.data
-#     value = form.value.data.strftime('%Y-%m-%d')
+  # Lấy thông tin về ngân sách
+  track = TrackBalance.query.filter_by(id=track_id, wallet_id=wallet_id).first_or_404()
+  # Xoá track đã được chọn
+  if track.check: # Nếu track check = True -> Không thể xoá
+    return redirect(url_for('errors.balance_delete_error'))
 
-#     return redirect(url_for('wallets.manage_filter', user_id=user_id, wallet_id=wallet_id, condition=condition, value=value))
+  db.session.delete(track)
+  db.session.commit()
 
-#   return render_template('filter.html', form=form, wallet=wallet, wallet_filter=True)
-
-# # Quản lý ví theo thời gian đã đươc xác nhận bởi bộ lọc
-# @wallets_blueprint.route('/<int:user_id>/<int:wallet_id>/filter/<int:condition>/<value>')
-# @login_required
-# def manage_filter(user_id, wallet_id, condition, value):
-#   # Lấy thông tin ví của người dùng dựa vào current user id và wallet id của user
-#   wallet = Wallet.query.filter_by(user_id=user_id, id=wallet_id).first_or_404()
-  
-#   if condition == 1:
-#     pass
-#   if condition == 2:
-#     date =value[:7]
-#   if condition == 3:
-#     date =value[:4]
-
-#   # Lọc thông tin các khoản thu dụa vào biến current_datetime
-#   track_info = [] # Khởi tạo danh sách chứa các object được query từ TrackBalance table dựa theo date condition
-#   track_balances = TrackBalance.query.filter(TrackBalance.wallet_id == wallet_id)
-#   for track in track_balances:
-#     if date in track.date.strftime('%Y-%m-%d'):
-#       track_info.append(track)
-
-#   # Lọc thông tin các khoản chi dụa vào biến current_datetime
-#   expense_info = [] # Khởi tạo danh sách chứa các object được query từ Expenditure table dựa theo date condition
-#   expenses = Expenditure.query.filter_by(user_id=user_id)
-#   for expense in expenses:
-#     if date in expense.date.strftime('%Y-%m-%d'):
-#       expense_info.append(expense)
-  
-#   return render_template('wallets/manage.html', wallet=wallet, track_info=track_info, expense_info=expense_info, date=date)
+  return redirect(url_for('wallets.manage', user_id=user_id, wallet_id=wallet_id))
 
 # Tất toán ví để bắt đầu chu kỳ mới
 @wallets_blueprint.route('/<int:user_id>/<int:wallet_id>/settlement')
@@ -227,3 +228,7 @@ def settlement(user_id, wallet_id):
   flash('Tất toán thành công!')
 
   return redirect(url_for('wallets.manage', user_id=user_id, wallet_id=wallet_id))
+
+@wallets_blueprint.context_processor
+def inject_wallet():
+  return {'wallet': Wallet.query.filter_by(user_id=current_user.id).first()}

@@ -10,8 +10,9 @@ body {
 }
 
 .table-add {
-  border-spacing: 0 15px;
+  border-spacing: 0 10px;
   border-collapse: separate;
+  margin-bottom: 0px !important;
 }
 
 .table-add thead tr th,

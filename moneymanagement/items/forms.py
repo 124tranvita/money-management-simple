@@ -14,7 +14,7 @@ class AddItemForm(FlaskForm):
 
   def validate_name(self, name) -> None:
     if Item.query.filter_by(user_id=current_user.id, name=self.name.data).first():
-      raise ValidationError('Tên danh mục đã tồn tại!')
+      raise ValidationError('Tên danh mục đã được tạo!')
 
 class UpdateItemForm(FlaskForm):
   name = StringField('Name', validators=[DataRequired(), Length(min=1, max=32)])
@@ -22,7 +22,7 @@ class UpdateItemForm(FlaskForm):
 
   def validate_name(self, name) -> None:
     if Item.query.filter_by(user_id=current_user.id, name=self.name.data).first():
-      raise ValidationError('Tên danh mục đã tồn tại!')
+      raise ValidationError('Tên danh mục đã được tạo!')
 
 class FilterItemForm(FlaskForm):
   condition = DateField('Condition', validators=[DataRequired()], format='%Y-%m-%d')

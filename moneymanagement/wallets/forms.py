@@ -22,12 +22,12 @@ class UpdateWalletForm(FlaskForm):
   submit = SubmitField('Create')
   # Thêm vào validate cho field name nếu người dùng cập nhật tên ví trùng với tên ví khác (in-progress)
 
-class AddWalletForm(FlaskForm):
+class AddBalanceForm(FlaskForm):
+  description = TextAreaField('Description', validators=[DataRequired()])
+  balance = IntegerField('Balance', default=0)
+  submit = SubmitField('Add')
+
+class UpdateBalanceForm(FlaskForm):
   description = TextAreaField('Description', validators=[DataRequired()])
   balance = IntegerField('Balance', default=0)
   submit = SubmitField('Update')
-
-class FilterWalletForm(FlaskForm):
-  condition = SelectField('Condition', choices=[(1, 'Tuần'), (2, 'Tháng'), (3, 'Năm')], validators=[DataRequired()])
-  value = DateField('Value', format='%Y-%m-%d', validators=[DataRequired()])
-  submit = SubmitField('Submit')
