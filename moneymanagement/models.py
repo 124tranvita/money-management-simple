@@ -50,6 +50,34 @@ class User(db.Model, UserMixin):
         amount += expense.amount
     return amount
 
+  # Hàm tính tổng số dư của ví
+  def rest_balance(self):
+    total_balance = 0
+    total_expense = 0
+    # Tính tổng ngân sách của ví
+    for wallet in self.wallets:
+      for track in wallet.track_balances:
+        total_balance += track.balance
+    # Tính tổng các khoản chi
+    for expense in self.expenditures:
+      total_expense += expense.amount
+    return (total_balance - total_expense)
+
+   # Hàm tính tổng số dư của ví theo thời gian (tháng, năm)
+  def rest_balance_in_period(self, date):
+    total_balance = 0
+    total_expense = 0
+    # Tính tổng ngân sách của ví
+    for wallet in self.wallets:
+      for track in wallet.track_balances:
+        if date in track.date.strftime('%Y-%m-%d'):
+          total_balance += track.balance
+    # Tính tổng các khoản chi
+    for expense in self.expenditures:
+      if date in expense.date.strftime('%Y-%m-%d'):
+        total_expense += expense.amount
+    return (total_balance - total_expense)
+
 ### WALLET MODEL###
 class Wallet(db.Model):
   __tablename__ = 'wallets'
