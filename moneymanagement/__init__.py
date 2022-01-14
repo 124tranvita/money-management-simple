@@ -16,12 +16,11 @@ app.config['SECRET_KEY'] = 'my_secret_key'
 ### CONFIGURE SQLACHEMY DATABASE ###
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-# uri = os.getenv('DATABASE_URL')
-# if uri.startswith('postgres://'):
-#   uri = uri.replace("postgres://", "postgresql://", 1)
+uri = os.getenv('DATABASE_URL')
+if uri.startswith('postgres://'):
+  uri = uri.replace("postgres://", "postgresql://", 1)
   
-# app.config['SQLALCHEMY_DATABASE_URI'] = uri or 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
+app.config['SQLALCHEMY_DATABASE_URI'] = uri or 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
