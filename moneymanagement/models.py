@@ -17,7 +17,7 @@ class User(db.Model, UserMixin):
   email = db.Column(db.String(64), nullable=False, unique=True, index=True)
   username = db.Column(db.String(64), nullable=False, unique=True, index=True)
   password_hash = db.Column(db.String(128))
-  profile_image = db.Column(db.String(64), nullable=False, default='df_profile.png')
+  profile_image = db.Column(db.String(64), nullable=False, default='df_profile.svg')
   # Make relationship to Wallet table
   wallets = db.relationship('Wallet', back_populates='owner', lazy='dynamic')
   # Make relationship to Item table

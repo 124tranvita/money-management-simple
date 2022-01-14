@@ -6,7 +6,7 @@
 
 .cardheader-add-wallet {
   height: 60px;
-  background-color: #00b0f0;
+  background-color: #0d6efd;
 }
 
 .cardheader-expenses {
@@ -33,18 +33,6 @@
   background-color: #0897eb !important;
   color: white;
 }
-
-/* Scroll able div */
-div.ex3 {
-  overflow: auto !important;
-}
-/* End Scroll able div */
-
-/* Add fund to wallet */
-div.fix-height {
-  height: 50% !important;
-}
-/* End add fund to wallet */
 
 div.transparen-background {
   background-color: transparent;

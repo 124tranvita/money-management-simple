@@ -126,7 +126,7 @@ def manage(user_id, wallet_id):
   # Lấy thông tin về các danh mục liên kết với ví
   item_info = Item.query.filter_by(user_id=user_id, wallet_id=wallet_id)
   
-  return render_template('wallets/manage.html', wallet=wallet, track_info=track_info, item_info=item_info, date=date,tb_page=tb_page)
+  return render_template('wallets/manage.html', wallet=wallet, track_info=track_info, item_info=item_info, date=date)
 
 # Thêm ngân sách cho ví
 @wallets_blueprint.route('/<int:user_id>/wallet-<int:wallet_id>/add_balance', methods=['GET', 'POST'])

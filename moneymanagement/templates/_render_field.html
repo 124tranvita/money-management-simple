@@ -1,7 +1,7 @@
 {% macro render_error(field) %}
-<ul>
-    {% for error in field.errors %}
-        <li style="color: red">{{ error }}</li>
-    {% endfor %}
+<ul style="list-style-type: none; padding-left: 0px">
+  {% for error in field.errors %}
+  <li style="color: red">{{ error }}</li>
+  {% endfor %}
 </ul>
 {% endmacro %}

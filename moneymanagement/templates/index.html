@@ -1,8 +1,8 @@
-{% extends 'base-1.html' %} {% block title %} Home {% endblock title %} {% block
-card_image %}
+{% extends 'base-1.html' %} {% block title %} Quản lý chi tiêu {% endblock title
+%} {% block card_image %}
 <img
-  src="https://mdbcdn.b-cdn.net/img/new/standard/nature/111.webp"
-  class="card-img-top"
+  src="{{ url_for('static', filename='icons/index-background.svg') }}"
+  class="card-img-top img-size"
 />
 {% endblock card_image %} {% block card_title %}
 <p>Quản Lý Chi Tiêu Cá Nhân</p>

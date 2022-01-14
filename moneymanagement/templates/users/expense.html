@@ -132,16 +132,15 @@
   <!--Expense table-->
   <section>
     <table class="table table-hover table-add">
-      <thead>
-        <tr class="btn-primary">
-          <th scope="col">Khoản chi</th>
-          <th scope="col">Thời gian</th>
-          <th scope="col">Danh mục</th>
-          <th scope="col">Số tiền</th>
-          <th scope="col">Khác</th>
-        </tr>
-      </thead>
+      <thead></thead>
       <tbody>
+        <tr>
+          <th scope="col"><a href="#">Khoản chi</a></th>
+          <th scope="col"><a href="#">Thời gian</a></th>
+          <th scope="col"><a href="#">Danh mục</a></th>
+          <th scope="col"><a href="#">Số tiền</a></th>
+          <th scope="col"><a href="#">Khác</a></th>
+        </tr>
         {% for expense in expenses.items %}
         <tr>
           <th>

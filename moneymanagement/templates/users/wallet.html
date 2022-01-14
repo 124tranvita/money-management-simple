@@ -1,4 +1,6 @@
-{% extends 'base-2.html' %} {% block title %} Wallets {% endblock title %} 
+{% extends 'base-2.html' %} 
+{% block title %} Ví {% endblock title %} 
+<!--block breadcrumb-->
 {%block breadcrumb %}
 <div class="content-breadcrumb">
   <ul class="breadcrumb">
@@ -12,11 +14,13 @@
   </ul>
 </div>
 {% endblock breadcrumb %}
+<!--block breadcrumb-->
+<!--block content-->
 {%block content %}
 <div class="content-home">
   <div class="container">
     <div class="row">
-    <!--list all user wallets-->
+    <!--list all wallets-->
     {% for wallet in wallets %}
       <div class="col-sm-3">
         <div class="card hovercard wallet">
@@ -30,35 +34,51 @@
             </a>
           </div>
           <div class="info">
-            <div class="title"><h4 class="color">{{ wallet.name }}</h4></div>
-            <div class="desc"><h5>Số dư</h5></div>
-            <div class="desc"><h4><span>{{ "{:,.0f}".format(wallet.balance) }}&#8363;</span></h4></div>
+            <div class="title">
+              <h4 class="color">
+                <a href="{{ url_for('wallets.manage', user_id=current_user.id, wallet_id=wallet.id) }}">
+                  {{ wallet.name }}
+                </a>
+              </h4>
+            </div>
+            <div class="desc"><h5>Ngân sách</h5></div>
+            <div class="desc"><h4><span>{{ "{:,.0f}".format(wallet.total_balance_by_date(now.strftime('%Y-%m'))) }}&#8363;</span></h4></div>
+            <div class="desc"><h5>Còn lại</h5></div>
+            <div class="desc"><h4><span>{{ "{:,.0f}".format(wallet.rest_balance_by_date(now.strftime('%Y-%m'))) }}&#8363;</span></h4></div>
             <div class="desc"></div>
           </div>
-          <div class="bottom nopadding">
-            <a
+          <!--bottom options-->
+          <div class="bottom row">
+            <div class="col-sm-4">
+              <a
               class="btn btn-primary btn-sm margin btn-icon"
               href="{{ url_for('wallets.add_balance',user_id=current_user.id, wallet_id=wallet.id) }}"
-            >
-              <i class="bi-clipboard-plus"></i>
-            </a>
-            <a
-            class="btn btn-primary btn-sm margin btn-icon"
-            href="{{ url_for('wallets.update', user_id=current_user.id, wallet_id=wallet.id) }}"
-            >
-              <i class="bi bi-pencil"></i>
-            </a>
-            <a
+              >
+                <i class="bi bi-plus-square"></i>
+              </a>
+            </div>
+            <div class="col-sm-4">
+              <a
+              class="btn btn-primary btn-sm margin btn-icon"
+              href="{{ url_for('wallets.update', user_id=current_user.id, wallet_id=wallet.id) }}"
+              >
+                <i class="bi bi-pencil"></i>
+              </a>
+            </div>
+            <div class="col-sm-4">
+              <a
               class="btn btn-danger btn-sm margin btn-icon"
               rel="publisher"
               href="{{ url_for('wallets.delete', wallet_id=wallet.id) }}" onclick="return confirm('Bạn có muốn xoá ví {{ wallet.name }}?');"
-            >
-              <i class="bi bi-trash"></i>
-            </a>
+              >
+                <i class="bi bi-trash"></i>
+              </a>
+            </div>
           </div>
+          <!--bottom options-->
         </div>
       </div>
-      <!--list all user wallets-->
+      <!--list all wallets-->
       {% endfor %}
       <!--Create wallet-->
       <div class="col-sm-3">
@@ -84,3 +104,4 @@
   </div>
 </div>
 {% endblock content %}
+<!--block content-->

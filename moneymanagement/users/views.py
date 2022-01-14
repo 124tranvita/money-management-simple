@@ -3,10 +3,12 @@ from datetime import datetime
 from flask import Blueprint, render_template, redirect, url_for, flash, request, abort
 from flask_login import login_user, login_required, logout_user, current_user
 from sqlalchemy import extract
+from werkzeug.security import generate_password_hash
 from moneymanagement import db
-from moneymanagement.users.forms import LoginForm, RegisterForm
+from moneymanagement.users.forms import LoginForm, RegisterForm, ChangePasswordForm, ChangeProfileImgForm
 from moneymanagement.models import User, Wallet, Expenditure, Item
-# import expenses logic handler
+# import logic handler
+from moneymanagement.handler.profile_picture import process_upload_image
 
 # Create blueprint for users
 users_blueprint = Blueprint('users', __name__)
@@ -122,6 +124,7 @@ def expense(user_id):
 @users_blueprint.route('/<int:user_id>/filter/<date_from>/<date_to>')
 @login_required
 def expense_filter(user_id, date_from, date_to):
+  # Kiểm tra id người dùng hiện tại có khớp với id được nhập vào hay không
   if current_user.id != user_id:
     abort(403)
 
@@ -129,3 +132,43 @@ def expense_filter(user_id, date_from, date_to):
   expenses = Expenditure.query.filter(Expenditure.user_id == user_id).filter(Expenditure.date >= date_from).filter(Expenditure.date <= date_to).order_by(Expenditure.date.desc()).paginate(page=page, per_page=5)
 
   return render_template('users/expense.html', expenses=expenses)
+
+# Đổi password cho người dùng
+@users_blueprint.route('/<int:user_id>/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password(user_id):
+  # Kiểm tra id người dùng hiện tại có khớp với id được nhập vào hay không
+  if current_user.id !=user_id:
+    abort(403)
+
+  form = ChangePasswordForm()
+  
+  if form.validate_on_submit():
+    current_user.password_hash = generate_password_hash(form.password.data)
+    db.session.commit()
+    flash('Mật khẩu đã được cập nhật!')
+    
+    return redirect(url_for('core.home', user_id=user_id))
+  return render_template('users/update_profile.html', form=form, password=True)
+
+# Đổi ảnh đại diện cho người dùng
+@users_blueprint.route('/<int:user_id>/change_profile_img', methods=['GET', 'POST'])
+@login_required
+def change_profile_img(user_id):
+  # Kiểm tra id người dùng hiện tại có khớp với id được nhập vào hay không
+  if current_user.id !=user_id:
+    abort(403)
+
+  form = ChangeProfileImgForm()
+  
+  if form.validate_on_submit():
+    if form.profile_image.data:
+      upload_img = form.profile_image.data
+      username = current_user.username
+      processed_img = process_upload_image(upload_img, username)
+      current_user.profile_image = processed_img
+
+    db.session.commit()
+    
+    return redirect(url_for('core.home', user_id=user_id))
+  return render_template('users/update_profile.html', form=form, profile_img=True)

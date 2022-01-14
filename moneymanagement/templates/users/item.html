@@ -49,7 +49,7 @@
           <td></td>
           <td></td>
           <!--other td-->
-          <td align="right">
+          <td style="text-align: center">
             <div class="dropdown open">
               <a
                 class="dropdown-toggle"
@@ -91,15 +91,14 @@
   <!--item table-->
   <section>
     <table class="table table-hover table-add">
-      <thead>
-        <tr class="btn-primary">
-          <th scope="col">Danh mục</th>
-          <th scope="col">Khoản chi</th>
-          <th scope="col">Tổng cộng</th>
-          <th scope="col">Khác</th>
-        </tr>
-      </thead>
+      <thead></thead>
       <tbody>
+        <tr>
+          <th scope="col"><a href="#">Danh mục</a></th>
+          <th scope="col"><a href="#">Khoản chi</a></th>
+          <th scope="col"><a href="#">Tổng cộng</a></th>
+          <th scope="col"><a href="#">Khác</a></th>
+        </tr>
         {% for item in items.items %}
         <tr>
           <th>

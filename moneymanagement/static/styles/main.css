@@ -281,3 +281,13 @@ table.summaries div.value {
   color: white;
   border-radius: 4px;
 }
+
+.img-size {
+  height: 60% !important;
+  width: 60% !important;
+}
+
+.img-size-login {
+  height: 30% !important;
+  width: 30% !important;
+}

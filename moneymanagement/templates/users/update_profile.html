@@ -1,0 +1,93 @@
+{% extends 'base-2.html' %} 
+{% block title %} Cập nhật thông tin {% endblock title %}
+<!--block breadcrumb-->
+{%block breadcrumb %}
+<div class="content-breadcrumb">
+  <ul class="breadcrumb">
+    <li>
+      <a href="{{ url_for('core.home', user_id=current_user.id) }}"
+        >Trang chủ</a
+      >
+    </li>
+    <li><a href="#">{{ current_user.username }}</a></li>
+    {% if password %}
+      <li>Đổi mật khẩu</li>
+    {% elif profile_img%}
+      <li>Đổi ảnh đại diện</li>
+    {% endif %}
+    <li>Đổi mật khẩu</li>
+  </ul>
+</div>
+{% endblock breadcrumb %}
+<!--block breadcrumb-->
+{%block content %}
+<div class="content-home">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-3"></div>
+      <div class="col-sm-6">
+        <div class="card hovercard">
+          <div class="cardheader-items"></div>
+          <div class="avatar">
+            <a href="#">
+              <img
+                alt=""
+                src="{{ url_for('static', filename='icons/list-icon.svg') }}"
+              />
+            </a>
+          </div>
+          <div class="info">
+            {% if password %}
+              <div class="title">
+                <p><h4 class="color">Đổi mật khẩu</h4></p>
+              </div>
+              <div class="container" align="left">
+                <form method="POST">
+                  {{ form.hidden_tag() }}
+                  <div class="row">
+                    <div class="col-sm-12">
+                      <label class="form-label" for="current_password">Mật khẩu hiện tại</label>
+                      {{form.current_password(class="form-control") }} {{ render_error(form.current_password) }}
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-12">
+                      <label class="form-label" for="password">Mật khẩu mới</label>
+                      {{form.password(class="form-control") }} {{ render_error(form.password) }}
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-12">
+                      <label class="form-label" for="password_confirm">Nhập lại mật khẩu mới</label>
+                      {{form.password_confirm(class="form-control") }} {{ render_error(form.password_confirm) }}
+                    </div>
+                  </div>
+                  <div class="col-12 button-center">{{ form.submit(class="btn btn-primary", value="Đổi mật khẩu") }}</div>
+                </form>
+              </div>
+            {% elif profile_img%}
+              <div class="title">
+                <p><h4 class="color">Đổi ảnh đại diện</h4></p>
+              </div>
+              <div class="container" align="left">
+                <form method="POST" action="" enctype="multipart/form-data">
+                  {{ form.hidden_tag() }}
+                  <div class="row">
+                    <div class="col-sm-12">
+                      <label class="form-label" for="profile_image">Chọn ảnh đại diện</label>
+                      {{form.profile_image(class="form-control") }} {{ render_error(form.profile_image) }}
+                    </div>
+                  </div>
+                  <div class="col-12 button-center">{{ form.submit(class="btn btn-primary", value="Cập nhật") }}</div>
+                </form>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-3"></div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+

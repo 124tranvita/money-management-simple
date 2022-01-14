@@ -1,4 +1,4 @@
-{% extends 'base-2.html' %} {% block title %} Wallet Management {% endblock title %}
+{% extends 'base-2.html' %} {% block title %} Quản lý ví {% endblock title %}
 {%block breadcrumb %}
 <div class="content-breadcrumb">
   <ul class="breadcrumb">
@@ -97,7 +97,7 @@
                     </a>
                   </li>
                   <li>
-                    <a class="dropdown-item text-danger" href="#" onclick="return confirm('Bạn có muốn xoá danh mục?');">
+                    <a class="dropdown-item text-danger" href="{{ url_for('wallets.delete', wallet_id=wallet.id) }}" onclick="return confirm('Bạn có muốn xoá ví {{ wallet.name }}?');">
                     <i class="fa fa-trash mr-1"></i> Xoá
                     </a>
                 </ul>
@@ -120,11 +120,11 @@
             <tr>
               <th>Khoản thu</th>
               <th>Thời gian</th>
-              <th>Khác</th>
+              <th style="text-align: center">Khác</th>
             </tr>
             <!--input balance list-->
             {% for track in track_info.items %}
-            <tr class="tr-scrollable">
+            <tr>
               <td>
                 <div class="user-info">
                   <div class="user-info__img">
@@ -142,7 +142,7 @@
               <td>
                 <h6 class="mb-0">{{ track.date.strftime('%Y-%m-%d') }}</h6>
               </td>
-              <td>
+              <td style="text-align: center">
                 <div class="dropdown open">
                   <a class="dropdown-toggle" href="#" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-three-dots"></i>
@@ -217,103 +217,56 @@
   <!--Track wallet's expense items table-->
   <section>
     <div class="">
-      <table class="table">
+      <table class="table table-add">
         <thead>
         </thead>
         <tbody>
           <tr>
             <th>Khoản chi</th>
             <th></th>
-            <th>Khác</th>
+            <th style="text-align: center">Khác</th>
           </tr>
           <!--input items list-->
           {% for item in wallet.items %}
-          <tr>
-            <td>
-              <div class="user-info">
-                <div class="user-info__img">
-                  <img
-                    src="{{ url_for('static', filename='icons/list-icon.svg') }}"
-                    alt="Expense Icon"
-                  />
+          {% if item.total_amount_by_date(current_user.id, date) > 0 %}
+            <tr>
+              <td>
+                <div class="user-info">
+                  <div class="user-info__img">
+                    <img
+                      src="{{ url_for('static', filename='icons/list-icon.svg') }}"
+                      alt="Expense Icon"
+                    />
+                  </div>
+                  <div class="user-info__basic">
+                    <h5 class="mb-0"><span>-</span>{{ "{:,.0f}".format(item.total_amount_by_date(current_user.id, date)) }}<span>&#8363;</span></h5>
+                    <p class="text-muted mb-0">{{ item.name }}</p>
+                  </div>
                 </div>
-                <div class="user-info__basic">
-                  <h5 class="mb-0"><span>-</span>{{ "{:,.0f}".format(item.total_amount_by_date(current_user.id, date)) }}<span>&#8363;</span></h5>
-                  <p class="text-muted mb-0">{{ item.name }}</p>
+              </td>
+              <td>
+              </td>
+              <td style="text-align: center">
+                <div class="dropdown open">
+                  <a class="dropdown-toggle" href="#" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-three-dots"></i>
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                    <li>
+                      <a class="dropdown-item" href="{{ url_for('users.item', user_id=current_user.id) }}">
+                      <i class="bi bi-card-list"></i> Quản lý danh mục
+                      </a>
+                    </li>
+                  </ul>
                 </div>
-              </div>
-            </td>
-            <td>
-            </td>
-            <td>
-              <div class="dropdown open">
-                <a class="dropdown-toggle" href="#" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                  <i class="bi bi-three-dots"></i>
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                  <li>
-                    <a class="dropdown-item" href="#">
-                    <i class="fa fa-pencil mr-1"></i> Chỉnh sửa
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item text-danger" href="#" onclick="return confirm('Bạn có muốn xoá danh mục?');">
-                    <i class="fa fa-trash mr-1"></i> Xoá
-                    </a>
-                </ul>
-              </div>
-            </td>
-          </tr>
+              </td>
+            </tr>
+          {% endif %}
           {% endfor %}
           <!--input items list end-->
         </tbody>
       </table>
     </div>
-    <!--Track Items Table pagination-->
-    <div class="demo">
-      <nav class="pagination-outer" aria-label="Page navigation">
-        <ul class="pagination justify-content-center">
-          <li class="page-item">
-            <a
-              href="{{ url_for('wallets.manage', user_id=current_user.id, wallet_id=wallet.id, tb_page=track_info.prev_num) }}"
-              class="page-link"
-              aria-label="Previous"
-            >
-              <span aria-hidden="true">&laquo;</span>
-            </a>
-          </li>
-          {% for page_num in track_info.iter_pages(left_edge=1, right_edge=1,
-          left_current=2, right_current=2) %} {% if page_num %} {% if
-            track_info.page == page_num %}
-          <li class="page-item disabled">
-            <a
-              class="page-link"
-              href="{{ url_for('wallets.manage', user_id=current_user.id, wallet_id=wallet.id, tb_page=page_num) }}"
-              >{{ page_num }}</a
-            >
-          </li>
-          {% else %}
-          <li class="page-item">
-            <a
-              class="page-link"
-              href="{{ url_for('wallets.manage', user_id=current_user.id, wallet_id=wallet.id, tb_page=page_num) }}"
-              >{{ page_num }}</a
-            >
-          </li>
-          {% endif %} {% endif %} {% endfor %}
-          <li class="page-item">
-            <a
-              href="{{ url_for('wallets.manage', user_id=current_user.id, wallet_id=wallet.id, tb_page=track_info.next_num) }}"
-              class="page-link"
-              aria-label="Next"
-            >
-              <span aria-hidden="true">&raquo;</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
-    </div>
-    <!--Track Items Table pagination end-->
   </section>
   <!--Track wallet's expense items table end-->
   </div>

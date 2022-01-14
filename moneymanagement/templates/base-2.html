@@ -50,10 +50,6 @@
     />
     <!-- JavaScript Bundle with Popper -->
     <script
-      type="text/javascript"
-      src="https://www.gstatic.com/charts/loader.js"
-    ></script>
-    <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
       crossorigin="anonymous"
@@ -71,16 +67,23 @@
         <!--User information-->
         <div class="col-sm-2">
           <div class="card hovercard">
-            <div class="cardheader"></div>
-            <div class="avatar">
-              <img
-                alt=""
-                src="{{ url_for('static', filename='icons/man.png') }}"
-              />
+            <div class="avatar-profile">
+              <a href="#" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <img
+                  alt=""
+                  src="{{ url_for('static', filename='profile_pics/' + current_user.profile_image) }}"
+                />
+              </a>
             </div>
             <div class="info">
               <div class="title">
-                <a target="_blank" href="#">{{ current_user.username }}</a>
+                <a
+                  target="_blank"
+                  href="#"
+                  data-bs-toggle="modal"
+                  data-bs-target="#exampleModal"
+                  >{{ current_user.username }}</a
+                >
               </div>
               {% block current_balance %}
               <div class="desc"><h6>Còn lại trong tháng</h6></div>
@@ -219,5 +222,65 @@
         <!--Content-->
       </div>
     </div>
+
+    <!-- Button trigger modal -->
+    <button
+      type="button"
+      class="btn btn-primary"
+      data-bs-toggle="modal"
+      data-bs-target="#exampleModal"
+    >
+      Launch demo modal
+    </button>
+
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="exampleModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">
+              Quản lý người dùng: {{ current_user.username }}
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <a href="#">Đổi tên người dùng</a>
+            <br />
+            <a href="#">Đổi Email</a>
+            <br />
+            <a
+              href="{{ url_for('users.change_password', user_id=current_user.id) }}"
+              >Đổi mật khẩu</a
+            >
+            <br />
+            <a
+              href="{{ url_for('users.change_profile_img', user_id=current_user.id) }}"
+              >Đổi ảnh đại diện</a
+            >
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Đóng
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Modal -->
   </body>
 </html>

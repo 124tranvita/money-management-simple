@@ -37,3 +37,20 @@ class RegisterForm(FlaskForm):
   def validate_username(self, username) -> None:
     if User.query.filter_by(username=self.username.data).first():
       raise ValidationError('Tên người dùng đã được đăng ký!')
+
+### CHANGE PASSWORD FORM ###
+class ChangePasswordForm(FlaskForm):
+  current_password = PasswordField('Current Password', validators=[DataRequired()])
+  password = PasswordField('Password', validators=[DataRequired(), EqualTo('password_confirm', message='Mật khẩu không khớp!')])
+  password_confirm = PasswordField('Confirm Password', validators=[DataRequired()])
+  submit = SubmitField('Register')
+  
+  def validate_current_password(self, current_password):
+    if not current_user.password_check(self.current_password.data):
+      raise ValidationError('Mật khẩu hiện tại không đúng!')
+
+### UPDATE PROFILE IMG ###
+class ChangeProfileImgForm(FlaskForm):
+  profile_image = FileField('Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
+  submit = SubmitField('Submit')
+  
