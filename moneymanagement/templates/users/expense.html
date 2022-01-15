@@ -73,10 +73,9 @@
                 {{"{:,.0f}".format(item.total_amount(current_user.id)) }}<span
                   >&#8363;</span
                 >
-                {% elif filter%} {{"{:,.0f}".format(total) }}<span
-                  >&#8363;</span
-                >
-                {% else %}
+                {% elif filter%}
+                {{"{:,.0f}".format(current_user.total_expenses_by_filter(date_from,
+                date_to)) }}<span>&#8363;</span> {% else %}
                 {{"{:,.0f}".format(current_user.total_expenses_by_date(now.strftime('%Y-%m')))}}<span
                   >&#8363;</span
                 >

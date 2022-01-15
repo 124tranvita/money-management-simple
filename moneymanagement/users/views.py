@@ -130,12 +130,8 @@ def expense_filter(user_id, date_from, date_to):
 
   page = request.args.get('page', 1, type=int)
   expenses = Expenditure.query.filter(Expenditure.user_id == user_id).filter(Expenditure.date >= date_from).filter(Expenditure.date <= date_to).order_by(Expenditure.date.desc()).paginate(page=page, per_page=5)
-  # Tính tônhr các khoản chi trong filter
-  total = 0
-  for expense in expenses:
-    total += expense.amount
 
-  return render_template('users/expense.html', expenses=expenses, total=total, filter=True)
+  return render_template('users/expense.html', expenses=expenses, date_from=date_from, date_to=date_to, filter=True)
 
 # Đổi password cho người dùng
 @users_blueprint.route('/<int:user_id>/change_password', methods=['GET', 'POST'])

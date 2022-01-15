@@ -40,8 +40,14 @@ class User(db.Model, UserMixin):
   def total_expenses_by_date(self, date):
     total = 0
     for wallet in self.wallets:
-      if date in wallet.date.strftime('%Y-%m-%d'):
-        total += wallet.total_expense_by_date(date)
+      total += wallet.total_expense_by_date(date)
+    return total
+
+  # Hàm tính tổng chi của người dùng theo filter
+  def total_expenses_by_filter(self, date_from, date_to):
+    total = 0
+    for wallet in self.wallets:
+      total += wallet.total_expense_by_filter(date_from, date_to)
     return total
 
   # Hàm tính tổng ngân sách của ví người dùng theo khoảng thời gian (tháng-năm)
@@ -111,6 +117,14 @@ class Wallet(db.Model):
     total = 0
     for expense in self.expenditures:
       if date in expense.date.strftime('%Y-%m-%d'):
+        total += expense.amount
+    return total
+
+  # Hàm tính tổng các khoản chi của tất cả các danh mục thuộc ví theo filter
+  def total_expense_by_filter(self, date_from, date_to):
+    total = 0
+    for expense in self.expenditures:
+      if date_from <= expense.date.strftime('%Y-%m-%d') <=  date_to:
         total += expense.amount
     return total
   
