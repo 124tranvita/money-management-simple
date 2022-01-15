@@ -69,13 +69,17 @@
           <td>
             <a href="#">
               <h5 class="mb-0">
-                {% if expense_by_item %} {{
-                "{:,.0f}".format(item.total_amount(current_user.id)) }}<span
+                {% if expense_by_item %}
+                {{"{:,.0f}".format(item.total_amount(current_user.id)) }}<span
                   >&#8363;</span
                 >
-                {% else %} {{
-                "{:,.0f}".format(current_user.total_expenses_by_date(now.strftime('%Y-%m')))
-                }}<span>&#8363;</span>
+                {% elif filter%} {{"{:,.0f}".format(total) }}<span
+                  >&#8363;</span
+                >
+                {% else %}
+                {{"{:,.0f}".format(current_user.total_expenses_by_date(now.strftime('%Y-%m')))}}<span
+                  >&#8363;</span
+                >
                 {% endif %}
               </h5>
             </a>

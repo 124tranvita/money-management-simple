@@ -176,7 +176,7 @@ def update_balance(user_id, wallet_id, track_id):
     form.balance.data = track.balance
     form.description.data = track.description
   
-  return render_template('wallets/add.html', form=form, user_id=user_id, wallet_id=wallet_id)
+  return render_template('wallets/add.html', form=form, user_id=user_id, wallet_id=wallet_id, update=True)
 
 # Xoá ngân sách khỏi ví
 @wallets_blueprint.route('/<int:user_id>/wallet-<int:wallet_id>/<int:track_id>/delete_balance')

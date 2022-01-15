@@ -11,7 +11,11 @@
     </li>
     <li><a href="#">{{ current_user.username }}</a></li>
     <li><a href="{{ url_for('users.wallet', user_id=current_user.id) }}"></a> {{ wallet.name }}</li>
+    {% if update %}
+    <li>Cập nhật ngân sách</li>
+    {% else %}
     <li>Thêm ngân sách</li>
+    {% endif %}
   </ul>
 </div>
 {% endblock breadcrumb %}
@@ -33,7 +37,17 @@
             </a>
           </div>
           <div class="info">
-            <div class="title"><p><h4 class="color">Thêm ngân sách</h4></p></div>
+            <div class="title">
+              {% if update %}
+                <p>
+                  <h4 class="color">Cập nhật ngân sách</h4>
+                </p>
+              {% else %}
+                <p>
+                  <h4 class="color">Thêm ngân sách</h4>
+                </p>
+              {% endif %}
+            </div>
             <div class="container" align="left">
               <form method="POST">
                 {{ form.hidden_tag() }}
