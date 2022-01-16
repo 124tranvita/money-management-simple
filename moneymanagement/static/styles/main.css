@@ -288,6 +288,6 @@ table.summaries div.value {
 }
 
 .img-size-login {
-  height: 30% !important;
+  /* height: 30% !important; */
   width: 30% !important;
 }
