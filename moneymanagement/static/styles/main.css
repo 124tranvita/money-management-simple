@@ -283,7 +283,7 @@ table.summaries div.value {
 }
 
 .img-size {
-  height: 60% !important;
+  /* height: 60% !important; */
   width: 60% !important;
 }
 
