@@ -46,7 +46,7 @@
                 <div class="row">
                   <div class="col-sm-12">
                     <label class="form-label" for="balance">Ngân sách</label>
-                    {{form.balance(class="form-control") }} {{ render_error(form.balance) }}
+                    {{form.balance(class="form-control", type="string", id="moneyInput") }} {{ render_error(form.balance) }}
                   </div>
                 </div>
                 <div class="row">
@@ -64,5 +64,6 @@
   </div>
   </div>
 </div>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 {% endblock content %}
 

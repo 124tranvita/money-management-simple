@@ -59,7 +59,7 @@
                 <div class="row"> 
                   <div class="col-sm-6">
                     <label class="form-label" for="amount">Số tiền</label>
-                    {{form.amount(class="form-control", type="number", pattern="^\d+(\.|\,)\d{2}$") }} {{ render_error(form.amount) }}
+                    {{form.amount(class="form-control", type="string", id="moneyInput") }} {{ render_error(form.amount) }}
                   </div>
                   <div class="col-sm-6">
                     <label class="form-label" for="item_id">Danh mục</label>
@@ -76,5 +76,6 @@
     </div>
   </div>
 </div>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 {% endblock content %}
 

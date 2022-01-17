@@ -147,6 +147,14 @@
                 <li>
                   <a
                     class="dropdown-item"
+                    href="{{ url_for('expenses.add_by_item', user_id=current_user.id, item_id=item.id) }}"
+                  >
+                    <i class="bi bi-credit-card"></i> Thêm khoản chi
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
                     href="{{ url_for('items.update', user_id=current_user.id, item_id=item.id) }}"
                   >
                     <i class="fa fa-pencil mr-1"></i> Chỉnh sửa

@@ -37,6 +37,35 @@ def add(user_id):
     return redirect(url_for('users.expense', user_id=user_id))
   return render_template('expenses/add.html', form=form, user_id=user_id)
 
+# Thêm khoản chi theo danh mục (người dùng sẽ thêm khoản chi này từ page danh mục)
+@expenses_blueprint.route('/<int:user_id>/<int:item_id>/add_expense', methods=['GET', 'POST'])
+@login_required
+def add_by_item(user_id, item_id):
+  # Kiểm tra id của người dùng hiện tại có trùng với id nhận vào hay không, nếu không -> 403 error
+  if current_user.id != user_id:
+    abort(403)
+
+  form = AddExpenditureForm()
+
+  if form.validate_on_submit():
+    expense = Expenditure(name=form.name.data,
+                          date=form.date.data,
+                          description=form.description.data,
+                          amount=form.amount.data,
+                          item_id=form.item_id.data.id,
+                          user_id=user_id,
+                          wallet_id=form.item_id.data.wallet_id)
+    db.session.add(expense)
+    db.session.commit()
+    flash('Đã thêm khoản chi!')
+
+    return redirect(url_for('items.item_expenses', item_id=item_id))
+
+  elif request.method == 'GET':
+    form.item_id.data = Item.query.get(item_id)
+
+  return render_template('expenses/add.html', form=form, user_id=user_id)
+
 # Cập nhật khoản chi
 @expenses_blueprint.route('/<int:user_id>/<int:expense_id>/update_expense', methods=['GET', 'POST'])
 @login_required

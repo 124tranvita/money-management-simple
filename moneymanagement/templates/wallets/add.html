@@ -10,7 +10,7 @@
       >
     </li>
     <li><a href="#">{{ current_user.username }}</a></li>
-    <li><a href="{{ url_for('users.wallet', user_id=current_user.id) }}"></a> {{ wallet.name }}</li>
+    <li><a href="{{ url_for('wallets.manage', user_id=current_user.id, wallet_id=wallet.id) }}">{{ wallet.name }}</a></li>
     {% if update %}
     <li>Cập nhật ngân sách</li>
     {% else %}
@@ -54,7 +54,7 @@
                 <div class="row">
                   <div class="col-sm-12">
                     <label class="form-label" for="balance">Thêm vào</label>
-                    {{form.balance(class="form-control") }} {{
+                    {{form.balance(class="form-control", type="string", id="moneyInput") }} {{
                     render_error(form.balance) }}
                   </div>
                 </div>
@@ -77,4 +77,5 @@
     </div>
   </div>
 </div>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 {% endblock content %}
